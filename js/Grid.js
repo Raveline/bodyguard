@@ -1,24 +1,30 @@
-function Grid(lvl) {
+// Note : width and height are computed in tile size
+function Grid(width, height) {
     PIXI.DisplayObjectContainer.call(this);
     this.x = 0;
     this.y = 0;
-    this.lvl = lvl;
-
-    this.library = ["floor_01", "floor_02", "crate_01"];
-    this.build();
+    this.tilesNumX = width;
+    this.tilesNumY = height;
 }
 Grid.constructor = Grid;
 Grid.prototype = Object.create(PIXI.DisplayObjectContainer.prototype);
 
-Grid.prototype.build = function() {
+Grid.prototype.setLevel = function(textures, lvl) {
+    this.lvl = lvl;
+    this.build(textures);
+}
+
+Grid.prototype.build = function(textures) {
     this.grid = [];
-    for (i in this.lvl) {
-        for (j in this.lvl[i]) {
-            var sprite = PIXI.Sprite.fromImage(this.library[this.lvl[i][j]]);
-            sprite.x = i * 16;
-            sprite.y = j * 16;
-            this.grid.push(sprite);
-            this.addChild(sprite);
+    for (i = 0; i < this.tilesNumY; i++) {
+        this.grid.push([]);
+        for (j = 0; j < this.tilesNumX; j++) {
+            var tile = new PIXI.MovieClip(textures);
+            tile.gotoAndStop(this.lvl[i][j].tile);
+            tile.y = i * TILE_SIZE;
+            tile.x = j * TILE_SIZE; 
+            this.addChild(tile);
+            this.grid[i].push(tile);
         }
     }
 }
