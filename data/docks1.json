@@ -1,31 +1,34 @@
-[ 
-    [
-        { "tile" : 1, "flip" : 0, "block" : 0 },
-        { "tile" : 1, "flip" : 0, "block" : 0 },
-        { "tile" : 1, "flip" : 0, "block" : 0 },
-        { "tile" : 1, "flip" : 0, "block" : 0 },
-        { "tile" : 1, "flip" : 0, "block" : 0 },
-        { "tile" : 1, "flip" : 0, "block" : 0 },
-        { "tile" : 1, "flip" : 0, "block" : 0 },
-        { "tile" : 1, "flip" : 0, "block" : 0 }
+{ "tiles" :
+    [ 
+        [
+            { "tile" : 1, "flip" : 0, "block" : 0 },
+            { "tile" : 1, "flip" : 0, "block" : 0 },
+            { "tile" : 1, "flip" : 0, "block" : 0 },
+            { "tile" : 1, "flip" : 0, "block" : 0 },
+            { "tile" : 1, "flip" : 0, "block" : 0 },
+            { "tile" : 1, "flip" : 0, "block" : 0 },
+            { "tile" : 1, "flip" : 0, "block" : 0 },
+            { "tile" : 1, "flip" : 0, "block" : 0 }
+        ],
+        [
+            { "tile" : 1, "flip" : 0, "block" : 1 },
+            { "tile" : 1, "flip" : 0, "block" : 0 },
+            { "tile" : 2, "flip" : 0, "block" : 0 },
+            { "tile" : 1, "flip" : 0, "block" : 0 },
+            { "tile" : 1, "flip" : 0, "block" : 0 },
+            { "tile" : 2, "flip" : 0, "block" : 0 },
+            { "tile" : 1, "flip" : 0, "block" : 0 },
+            { "tile" : 1, "flip" : 0, "block" : 0 }
+        ],
+        [
+            { "tile" : 3, "flip" : 0, "block" : 0 },
+            { "tile" : 3, "flip" : 0, "block" : 0 },
+            { "tile" : 3, "flip" : 0, "block" : 0 },
+            { "tile" : 3, "flip" : 0, "block" : 0 },
+            { "tile" : 3, "flip" : 0, "block" : 0 },
+            { "tile" : 3, "flip" : 0, "block" : 0 },
+            { "tile" : 3, "flip" : 0, "block" : 0 }
+        ]
     ],
-    [
-        { "tile" : 1, "flip" : 0, "block" : 1 },
-        { "tile" : 1, "flip" : 0, "block" : 0 },
-        { "tile" : 2, "flip" : 0, "block" : 0 },
-        { "tile" : 1, "flip" : 0, "block" : 0 },
-        { "tile" : 1, "flip" : 0, "block" : 0 },
-        { "tile" : 2, "flip" : 0, "block" : 0 },
-        { "tile" : 1, "flip" : 0, "block" : 0 },
-        { "tile" : 1, "flip" : 0, "block" : 0 }
-    ],
-    [
-        { "tile" : 3, "flip" : 0, "block" : 0 },
-        { "tile" : 3, "flip" : 0, "block" : 0 },
-        { "tile" : 3, "flip" : 0, "block" : 0 },
-        { "tile" : 3, "flip" : 0, "block" : 0 },
-        { "tile" : 3, "flip" : 0, "block" : 0 },
-        { "tile" : 3, "flip" : 0, "block" : 0 },
-        { "tile" : 3, "flip" : 0, "block" : 0 }
-    ]
-]
+"tileset-size" : 23
+}
