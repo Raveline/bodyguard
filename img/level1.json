@@ -1,6 +1,6 @@
 {"frames": {
 
-"dock1.png":
+"dock1":
 {
 	"frame": {"x":2,"y":2,"w":16,"h":16},
 	"rotated": false,
@@ -8,7 +8,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":16,"h":16},
 	"sourceSize": {"w":16,"h":16}
 },
-"dock10.png":
+"dock10":
 {
 	"frame": {"x":20,"y":2,"w":16,"h":16},
 	"rotated": false,
@@ -16,7 +16,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":16,"h":16},
 	"sourceSize": {"w":16,"h":16}
 },
-"dock11.png":
+"dock11":
 {
 	"frame": {"x":38,"y":2,"w":16,"h":16},
 	"rotated": false,
@@ -24,7 +24,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":16,"h":16},
 	"sourceSize": {"w":16,"h":16}
 },
-"dock12.png":
+"dock12":
 {
 	"frame": {"x":56,"y":2,"w":16,"h":16},
 	"rotated": false,
@@ -32,7 +32,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":16,"h":16},
 	"sourceSize": {"w":16,"h":16}
 },
-"dock13.png":
+"dock13":
 {
 	"frame": {"x":74,"y":2,"w":16,"h":16},
 	"rotated": false,
@@ -40,7 +40,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":16,"h":16},
 	"sourceSize": {"w":16,"h":16}
 },
-"dock14.png":
+"dock14":
 {
 	"frame": {"x":92,"y":2,"w":16,"h":16},
 	"rotated": false,
@@ -48,7 +48,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":16,"h":16},
 	"sourceSize": {"w":16,"h":16}
 },
-"dock15.png":
+"dock15":
 {
 	"frame": {"x":110,"y":2,"w":16,"h":16},
 	"rotated": false,
@@ -56,7 +56,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":16,"h":16},
 	"sourceSize": {"w":16,"h":16}
 },
-"dock16.png":
+"dock16":
 {
 	"frame": {"x":2,"y":20,"w":16,"h":16},
 	"rotated": false,
@@ -64,7 +64,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":16,"h":16},
 	"sourceSize": {"w":16,"h":16}
 },
-"dock17.png":
+"dock17":
 {
 	"frame": {"x":20,"y":20,"w":16,"h":16},
 	"rotated": false,
@@ -72,7 +72,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":16,"h":16},
 	"sourceSize": {"w":16,"h":16}
 },
-"dock18.png":
+"dock18":
 {
 	"frame": {"x":38,"y":20,"w":16,"h":16},
 	"rotated": false,
@@ -80,7 +80,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":16,"h":16},
 	"sourceSize": {"w":16,"h":16}
 },
-"dock19.png":
+"dock19":
 {
 	"frame": {"x":56,"y":20,"w":16,"h":16},
 	"rotated": false,
@@ -88,7 +88,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":16,"h":16},
 	"sourceSize": {"w":16,"h":16}
 },
-"dock2.png":
+"dock2":
 {
 	"frame": {"x":74,"y":20,"w":16,"h":16},
 	"rotated": false,
@@ -96,7 +96,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":16,"h":16},
 	"sourceSize": {"w":16,"h":16}
 },
-"dock20.png":
+"dock20":
 {
 	"frame": {"x":92,"y":20,"w":16,"h":16},
 	"rotated": false,
@@ -104,7 +104,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":16,"h":16},
 	"sourceSize": {"w":16,"h":16}
 },
-"dock21.png":
+"dock21":
 {
 	"frame": {"x":110,"y":20,"w":16,"h":16},
 	"rotated": false,
@@ -112,7 +112,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":16,"h":16},
 	"sourceSize": {"w":16,"h":16}
 },
-"dock22.png":
+"dock22":
 {
 	"frame": {"x":2,"y":38,"w":16,"h":16},
 	"rotated": false,
@@ -120,7 +120,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":16,"h":16},
 	"sourceSize": {"w":16,"h":16}
 },
-"dock23.png":
+"dock23":
 {
 	"frame": {"x":20,"y":38,"w":16,"h":16},
 	"rotated": false,
@@ -128,7 +128,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":16,"h":16},
 	"sourceSize": {"w":16,"h":16}
 },
-"dock3.png":
+"dock3":
 {
 	"frame": {"x":38,"y":38,"w":16,"h":16},
 	"rotated": false,
@@ -136,7 +136,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":16,"h":16},
 	"sourceSize": {"w":16,"h":16}
 },
-"dock4.png":
+"dock4":
 {
 	"frame": {"x":56,"y":38,"w":16,"h":16},
 	"rotated": false,
@@ -144,7 +144,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":16,"h":16},
 	"sourceSize": {"w":16,"h":16}
 },
-"dock5.png":
+"dock5":
 {
 	"frame": {"x":74,"y":38,"w":16,"h":16},
 	"rotated": false,
@@ -152,7 +152,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":16,"h":16},
 	"sourceSize": {"w":16,"h":16}
 },
-"dock6.png":
+"dock6":
 {
 	"frame": {"x":92,"y":38,"w":16,"h":16},
 	"rotated": false,
@@ -160,7 +160,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":16,"h":16},
 	"sourceSize": {"w":16,"h":16}
 },
-"dock7.png":
+"dock7":
 {
 	"frame": {"x":110,"y":38,"w":16,"h":16},
 	"rotated": false,
@@ -168,7 +168,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":16,"h":16},
 	"sourceSize": {"w":16,"h":16}
 },
-"dock8.png":
+"dock8":
 {
 	"frame": {"x":2,"y":56,"w":16,"h":16},
 	"rotated": false,
@@ -176,7 +176,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":16,"h":16},
 	"sourceSize": {"w":16,"h":16}
 },
-"dock9.png":
+"dock9":
 {
 	"frame": {"x":20,"y":56,"w":16,"h":16},
 	"rotated": false,
