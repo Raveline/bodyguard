@@ -5,6 +5,9 @@ function Main() {
     this.initRenderer(); // PIXI rendering
     this.loadAssets();  
     this.projectiles = [];
+    this.debug_1 = new PIXI.Text("", { font : "12pt arial", fill: "black" });
+    this.debug_2 = new PIXI.Text("", { font : "12pt arial", fill: "black" });
+    this.debug_3 = new PIXI.Text("", { font : "12pt arial", fill: "black" });
 }
 
 Main.prototype.initRenderer = function() {
@@ -53,6 +56,15 @@ Main.prototype.addGrid = function() {
 }
 
 Main.prototype.allSet = function() {
+    this.stage.addChild(this.debug_1);
+    this.debug_1.x = 0;
+    this.debug_1.y = 0;
+    this.debug_2.x = 0;
+    this.debug_2.y = 20;
+    this.debug_3.x = 0;
+    this.debug_3.y = 40;
+    this.stage.addChild(this.debug_2);
+    this.stage.addChild(this.debug_3);
     requestAnimFrame(this.update.bind(this));
 }
 
@@ -63,6 +75,7 @@ Main.prototype.mouseMoved = function(mouseData) {
 
 Main.prototype.mouseClicked = function(mouseData) {
     var mouseCoords = this.repositionMouse(mouseData.global);
+    this.debug_3.setText("Mouse at : " + mouseCoords.x + "," + mouseCoords.y);
     event = mouseData.originalEvent;
     if(event.which === 3 || event.button === 2) {
         this.addBulletTowards(this.bodyguard.position, mouseCoords);
@@ -75,6 +88,7 @@ Main.prototype.mouseClicked = function(mouseData) {
 Main.prototype.repositionMouse = function(coords) {
     var locals = coords.clone();
     locals.scale(1/SCALE_FACTOR);
+    locals.substract(this.grid.camera);
     return locals;
 }
 
@@ -86,17 +100,26 @@ Main.prototype.addBulletTowards = function(from, to) {
 
 Main.prototype.aHeroIsBorn = function() {
     var textures = getTextureArray("character", 4);
-    var hero = new Mover(textures, 16, 10, new PIXI.Point(50,50), new PIXI.Point(0,0), new PIXI.Point(0,0));
+    var hero = new Mover(textures, 16, 10, new PIXI.Point(96,96), new PIXI.Point(0,0), new PIXI.Point(0,0));
     return hero;
 };
 
 Main.prototype.update = function() {
     requestAnimFrame(this.update.bind(this));
     this.renderer.render(this.stage);
-    this.bodyguard.update();
+    this.bodyguard.update(this.grid.camera);
+    this.grid.move_camera(this.bodyguard.direction.velocity);
+    //this.bodyguard.position.add(this.grid.camera.offset_redux);
+    this.grid.update();
     for (i in this.projectiles) {
-        this.projectiles[i].update();
+        this.projectiles[i].update(this.grid.camera);
     }
+    var tile_po = this.bodyguard.computeTilePosition();
+    // this.debug_1.setText("Hero position : " + this.bodyguard.absolute_position.x + "," + this.bodyguard.absolute_position.y);
+    //this.debug_1.setText("Hero position : " + tile_po.x + "," + tile_po.y);
+    this.debug_1.setText("Camera position : " + this.grid.camera.x + "," + this.grid.camera.y);
+    this.debug_2.setText("Camera offset : " + this.grid.camera.offset.x + "," + this.grid.camera.offset.y);
+    
 };
 
 /** TODO : extract this to a class, a util file, or under

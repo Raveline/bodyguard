@@ -1,10 +1,9 @@
-
+/** Extending PIXI.Point so it gives us vectorial utils **/
 PIXI.Point.prototype.add = function(p) {
     this.x += p.x;
     this.y += p.y;
 }
 
-/** Vector functionalities for PIXI.Point **/
 PIXI.Point.prototype.substract = function(p) {
     var x = this.x - p.x;
     var y = this.y - p.y;
@@ -30,16 +29,26 @@ PIXI.Point.prototype.scale = function(s) {
     this.y *= s;
 }
 
+PIXI.Point.prototype.isInside = function(r) {
+    return this.x >= r.x 
+    && this.x <= r.x+r.w
+    && this.y >= r.y 
+    && this.y <= r.y+r.h;
+}
+
 function Direction(obj) {
     this.obj = obj;
     this.velocity = new PIXI.Point(0,0);
+    this.step_numbers = 0;
 }
 
 Direction.prototype.moveTowards = function(dest) {
     this.destination = dest.clone();
-    var moveVect = dest.substract(this.obj.position);
+    var moveVect = dest.substract(this.obj.absolute_position);
+    var lengthMove = moveVect.length();
     this.velocity = moveVect.normalize();
     this.velocity.scale(this.obj.speed);
+    this.step_numbers = ~~(lengthMove / this.velocity.length());
 }
 
 Direction.prototype.orientateTowards = function(dest) {
@@ -49,15 +58,16 @@ Direction.prototype.orientateTowards = function(dest) {
 }
 
 Direction.prototype.step = function() {
-    this.obj.position.add(this.velocity);
+    this.obj.absolute_position.add(this.velocity);
+    this.step_numbers--;
 }
 
 Direction.prototype.hasReachedDestination = function() {
-    return this.destination.substract(this.obj.position).length() <= this.velocity.length();
+    return this.step_numbers == 0;
 }
 
 Direction.prototype.reached = function() {
-    this.obj.position = this.destination;
+    this.obj.absolute_position = this.destination;
     this.velocity.x = 0;
     this.velocity.y = 0;
 }
