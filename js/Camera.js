@@ -2,6 +2,7 @@ function Camera(x,y,w,h) {
     PIXI.Rectangle.call(this, x,y,w,h);
     this.offset = new PIXI.Point(0,0);
     this.offset_redux = new PIXI.Point(0,0);
+    this.focus = new PIXI.Rectangle(w/2, h/2, 1,1);
 }
 Camera.constructor = Camera;
 Camera.prototype = Object.create(PIXI.Rectangle.prototype);
@@ -11,37 +12,38 @@ Camera.prototype.setWorldMaximums = function(maxX, maxY) {
     this.maxY = maxY - this.h;
 };
 
-Camera.prototype.move = function(velocity) {
-    console.log("Velocity of " + velocity.x + "," + velocity.y);
-    console.log("Offset before : " + this.offset.x);
-    if (this.x + velocity.x < 0) {
-        this.offset.x += this.x - velocity.x;
+Camera.prototype.move = function(center) {
+    minx =  this.x + this.focus.x;
+    miny = this.y + this.focus.y;
+    maxx = minx + this.focus.width;
+    maxy = miny + this.focus.height;
+    //console.log(center.absolute_position.x, minx, maxx);
+    if (center.absolute_position.x < minx) {
+        this.x -= (minx - center.absolute_position.x);
+    }
+    if (center.absolute_position.y < miny) {
+        this.y -= (miny - center.absolute_position.y);
+    }
+    if (center.absolute_position.x > maxx) {
+        this.x += (center.absolute_position.x - maxx);
+    }
+    if (center.absolute_position.y > maxy) {
+        this.y += (center.absolute_position.y - maxy);
+    }
+    this.clamp();
+}
+
+Camera.prototype.clamp = function() {
+    if (this.x <0) {
         this.x = 0;
-    } 
-    if (this.x + velocity.y > this.maxX) {
-        this.x = this.maxX;
     }
-    if (this.y + velocity.y > this.maxY) {
-        this.y = this.maxY;
-    }
-    if (velocity.x > 0) {
-        var xmove = velocity.x;
-        this.offset_redux.x = this.offset.x % xmove;
-        console.log("Move : " + xmove);
-        console.log("Refux : " + this.offset_redux.x);
-        this.offset.x -= this.offset_redux.x;
-        xmove -= this.offset.x;
-        this.x += xmove;
-    }
-    /*if (this.y + velocity.y < 0) {
-        this.offset.y += this.y - velocity.y;
+    if (this.y < 0) {
         this.y = 0;
-    } else if (velocity.y > 0) {
-        var ymove = velocity.y;
-        this.offset_redux.y = this.offset.y % ymove;
-        this.offset.y -= this.offset_redux.y;
-        ymove -= this.offset.y;
-        this.y += velocity.y;
-    }*/
-    console.log("Offset after : " + this.offset.x);
+    }
+    if (this.x + this.width > this.maxX) {
+        this.x = maxX;
+    }
+    if (this.y + this.height > this.maxY) {
+        this.y = maxY;
+    }
 }
