@@ -108,17 +108,15 @@ Main.prototype.update = function() {
     requestAnimFrame(this.update.bind(this));
     this.renderer.render(this.stage);
     this.bodyguard.update(this.grid.camera);
-    this.grid.move_camera(this.bodyguard.direction.velocity);
-    //this.bodyguard.position.add(this.grid.camera.offset_redux);
+    this.grid.set_camera(this.bodyguard);
     this.grid.update();
     for (i in this.projectiles) {
         this.projectiles[i].update(this.grid.camera);
     }
-    var tile_po = this.bodyguard.computeTilePosition();
-    // this.debug_1.setText("Hero position : " + this.bodyguard.absolute_position.x + "," + this.bodyguard.absolute_position.y);
+    // var tile_po = this.bodyguard.computeTilePosition();
+    this.debug_1.setText("Hero position : " + this.bodyguard.absolute_position.x + "," + this.bodyguard.absolute_position.y);
     //this.debug_1.setText("Hero position : " + tile_po.x + "," + tile_po.y);
-    this.debug_1.setText("Camera position : " + this.grid.camera.x + "," + this.grid.camera.y);
-    this.debug_2.setText("Camera offset : " + this.grid.camera.offset.x + "," + this.grid.camera.offset.y);
+    this.debug_2.setText("Camera position : " + this.grid.camera.x + "," + this.grid.camera.y);
     
 };
 
