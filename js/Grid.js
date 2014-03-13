@@ -1,3 +1,5 @@
+// This sucks.
+// Look at https://github.com/GoodBoyDigital/pixi.js/blob/master/examples/example%2011%20-%20RenderTexture/index.html
 // Note : width and height are computed in tile size
 function Grid(width, height) {
     PIXI.DisplayObjectContainer.call(this);
@@ -6,47 +8,74 @@ function Grid(width, height) {
     this.tilesNumX = width;
     this.tilesNumY = height;
     this.camera = new Camera(0,0,width*TILE_SIZE, height*TILE_SIZE);
+    this.needRendering = true;
 }
 Grid.constructor = Grid;
 Grid.prototype = Object.create(PIXI.DisplayObjectContainer.prototype);
 
+/**
+ * Set the level displayed.
+ * Will associate the lvl variable, calibrate the camera
+ * and store the tileset. 
+**/
 Grid.prototype.setLevel = function(textures, lvl) {
     this.lvl = lvl;
-    this.camera.setWorldMaximums(this.lvl[0].length, this.lvl.length);
-    this.build(textures);
+    this.camera.setWorldMaximums(this.lvl[0].length * TILE_SIZE, this.lvl.length * TILE_SIZE);
+    this.textures = textures;
+    this.buildRenderTexture(this.tilesNumX*TILE_SIZE, this.tilesNumY*TILE_SIZE);
+    this.outputSprite = this.sprite || this.build_outputSprite(this.camera.width, this.camera.height);
 }
 
-Grid.prototype.build = function(textures) {
+Grid.prototype.set_camera = function(center) {
+    this.needRendering= this.camera.move(center);
+}
+
+Grid.prototype.buildRenderTexture = function(width, height) {
     this.grid = [];
-    for (i = 0; i < this.tilesNumY; i++) {
+    this.renderTexture = new PIXI.RenderTexture(width, height);
+    for (var y = 0; y < height/TILE_SIZE; y++) {
         this.grid.push([]);
-        for (j = 0; j < this.tilesNumX; j++) {
-            var tile = new PIXI.MovieClip(textures);
-            tile.gotoAndStop(this.lvl[i][j].tile);
-            tile.y = i * TILE_SIZE;
-            tile.x = j * TILE_SIZE; 
-            this.addChild(tile);
-            this.grid[i].push(tile);
+        for (var x = 0; x < width/TILE_SIZE; x++) {
+            var clip = new PIXI.MovieClip(this.textures);
+            this.addChild(clip);
+            this.grid[y].push(clip);
         }
     }
+    this.drawMapOnTexture();
 }
 
-Grid.prototype.move_camera = function(velocity) {
-    if (velocity.x != 0 || velocity.y != 0) {
-        this.camera.move(velocity);
+Grid.prototype.build_outputSprite = function(width, height) {
+    var outputSprite = new PIXI.Sprite(this.renderTexture);
+    outputSprite.width = width;
+    outputSprite.height = height;
+    return outputSprite;
+}
+
+/**
+ * Draw the grid on the stored canvas, and print the canvas on the grid.
+ **/
+Grid.prototype.update = function() {
+    if (this.needRendering) {
+        this.drawMapOnTexture();
     }
 }
 
-Grid.prototype.update = function() {
+Grid.prototype.drawMapOnTexture = function() {
     var startX = ~~ (this.camera.x / TILE_SIZE);
     var startY = ~~ (this.camera.y / TILE_SIZE);
-    var endX = ~~ ((this.camera.x + this.camera.width) / TILE_SIZE);
-    var endY = ~~ ((this.camera.y + this.camera.height) / TILE_SIZE);
-    //console.log(endX, endY);
+    var endX = startX + this.tilesNumX -1;
+    var endY = startY + this.tilesNumY -1;
 
-    for (var x = startX; x < endX; x++) {
-        for (var y = startY; y < endX; y++) {
-            this.grid[y-startY][x-startX].gotoAndStop(this.lvl[y][x].tile);
+    for (var y = startY; y < endY; y++) {
+        var line = this.lvl[y];
+        for (var x = startX; x < endX; x++) {
+            var tileValue = line[x].tile;
+            var clip = this.grid[x-startX][y-startY];
+            clip.gotoAndStop(tileValue);
+            clip.x = (x - startX) * TILE_SIZE - (this.camera.x % TILE_SIZE);
+            clip.y = (y- startY) * TILE_SIZE - (this.camera.y % TILE_SIZE); 
         }
     }
+    this.needRendering = false; 
+    this.renderTexture.render(this);
 }

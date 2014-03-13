@@ -41,7 +41,6 @@ Main.prototype.assetsLoaded = function() {
     this.setClickEvents();
     // TODO : move this after level loading when hero position info are loaded.
     this.bodyguard = this.aHeroIsBorn(); 
-    this.addToDisplayList(this.bodyguard);
     this.loadLevel("docks1");
 };
 
@@ -52,7 +51,6 @@ Main.prototype.setClickEvents = function() {
 
 Main.prototype.addGrid = function() {
     this.grid = new Grid(12,12);
-    this.addToDisplayList(this.grid);
 }
 
 Main.prototype.allSet = function() {
@@ -106,17 +104,17 @@ Main.prototype.aHeroIsBorn = function() {
 
 Main.prototype.update = function() {
     requestAnimFrame(this.update.bind(this));
-    this.renderer.render(this.stage);
     this.bodyguard.update(this.grid.camera);
     this.grid.set_camera(this.bodyguard);
     this.grid.update();
     for (i in this.projectiles) {
         this.projectiles[i].update(this.grid.camera);
     }
-    // var tile_po = this.bodyguard.computeTilePosition();
+    var tile_po = this.bodyguard.computeTilePosition();
     this.debug_1.setText("Hero position : " + this.bodyguard.absolute_position.x + "," + this.bodyguard.absolute_position.y);
-    //this.debug_1.setText("Hero position : " + tile_po.x + "," + tile_po.y);
-    this.debug_2.setText("Camera position : " + this.grid.camera.x + "," + this.grid.camera.y);
+    this.debug_1.setText("Hero position : " + tile_po.x + "," + tile_po.y);
+    //this.debug_2.setText("Camera position : " + this.grid.camera.x + "," + this.grid.camera.y);
+    this.renderer.render(this.stage);
     
 };
 
@@ -144,4 +142,7 @@ Main.prototype.parseLevel = function(data) {
     this.level = data.tiles;
     var textures = getTextureArray("dock", data.tileset_size);
     this.grid.setLevel(textures, this.level);
+    // TODO : Change this so we can switch easily levels
+    this.addToDisplayList(this.grid.outputSprite);
+    this.addToDisplayList(this.bodyguard);
 }
