@@ -20,7 +20,7 @@ Grid.prototype = Object.create(PIXI.DisplayObjectContainer.prototype);
 **/
 Grid.prototype.setLevel = function(textures, lvl) {
     this.lvl = lvl;
-    this.camera.setWorldMaximums(this.lvl[0].length * TILE_SIZE, this.lvl.length * TILE_SIZE);
+    this.camera.setWorldMaximums((this.lvl[0].length -1) * TILE_SIZE, (this.lvl.length -1) * TILE_SIZE);
     this.textures = textures;
     this.buildRenderTexture(this.tilesNumX*TILE_SIZE, this.tilesNumY*TILE_SIZE);
     this.outputSprite = this.sprite || this.build_outputSprite(this.camera.width, this.camera.height);
@@ -33,9 +33,9 @@ Grid.prototype.set_camera = function(center) {
 Grid.prototype.buildRenderTexture = function(width, height) {
     this.grid = [];
     this.renderTexture = new PIXI.RenderTexture(width, height);
-    for (var y = 0; y < height/TILE_SIZE; y++) {
+    for (var y = 0; y < height/TILE_SIZE + 1; y++) {
         this.grid.push([]);
-        for (var x = 0; x < width/TILE_SIZE; x++) {
+        for (var x = 0; x < width/TILE_SIZE + 1; x++) {
             var clip = new PIXI.MovieClip(this.textures);
             this.addChild(clip);
             this.grid[y].push(clip);
@@ -63,8 +63,8 @@ Grid.prototype.update = function() {
 Grid.prototype.drawMapOnTexture = function() {
     var startX = ~~ (this.camera.x / TILE_SIZE);
     var startY = ~~ (this.camera.y / TILE_SIZE);
-    var endX = startX + this.tilesNumX -1;
-    var endY = startY + this.tilesNumY -1;
+    var endX = startX + this.tilesNumX+1;
+    var endY = startY + this.tilesNumY+1;
 
     for (var y = startY; y < endY; y++) {
         var line = this.lvl[y];
@@ -77,5 +77,5 @@ Grid.prototype.drawMapOnTexture = function() {
         }
     }
     this.needRendering = false; 
-    this.renderTexture.render(this);
+    this.renderTexture.render(this, new PIXI.Point(0,0), true);
 }

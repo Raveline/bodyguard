@@ -13,7 +13,7 @@ function Main() {
 Main.prototype.initRenderer = function() {
     // Stage creation and appendage
     this.stage = new PIXI.Stage(0xFFFFFF);
-    this.renderer = PIXI.autoDetectRenderer(800, 600);
+    this.renderer = PIXI.autoDetectRenderer(768, 768);
     this.mousePosition = new PIXI.Point(0,0)
     document.body.appendChild(this.renderer.view);
 
@@ -86,7 +86,7 @@ Main.prototype.mouseClicked = function(mouseData) {
 Main.prototype.repositionMouse = function(coords) {
     var locals = coords.clone();
     locals.scale(1/SCALE_FACTOR);
-    locals.substract(this.grid.camera);
+    locals.add(this.grid.camera);
     return locals;
 }
 
@@ -113,7 +113,7 @@ Main.prototype.update = function() {
     var tile_po = this.bodyguard.computeTilePosition();
     this.debug_1.setText("Hero position : " + this.bodyguard.absolute_position.x + "," + this.bodyguard.absolute_position.y);
     this.debug_1.setText("Hero position : " + tile_po.x + "," + tile_po.y);
-    //this.debug_2.setText("Camera position : " + this.grid.camera.x + "," + this.grid.camera.y);
+    this.debug_2.setText("Hero position : " + this.bodyguard.absolute_position.x + "," + this.bodyguard.absolute_position.y);
     this.renderer.render(this.stage);
     
 };

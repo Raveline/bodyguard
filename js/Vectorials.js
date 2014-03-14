@@ -52,7 +52,7 @@ Direction.prototype.moveTowards = function(dest) {
 }
 
 Direction.prototype.orientateTowards = function(dest) {
-    var vect = dest.substract(this.obj.position);
+    var vect = dest.substract(this.obj.absolute_position);
     var angle = Math.atan2(vect.y, vect.x);
     this.obj.rotation = angle + 1.57079633;
 }

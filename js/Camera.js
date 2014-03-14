@@ -2,7 +2,7 @@ function Camera(x,y,w,h) {
     PIXI.Rectangle.call(this, x,y,w,h);
     this.offset = new PIXI.Point(0,0);
     this.offset_redux = new PIXI.Point(0,0);
-    this.focus = new PIXI.Rectangle(w/2, h/2, 1,1);
+    this.focus = new PIXI.Rectangle(w/2, h/2, 0,0);
 }
 Camera.constructor = Camera;
 Camera.prototype = Object.create(PIXI.Rectangle.prototype);
