@@ -1,7 +1,6 @@
 function Bullet(from, to) {
     PIXI.Sprite.call(this, PIXI.Texture.fromImage("img/bullet.png"));
-    this.absolute_position.x = from.x;
-    this.absolute_position.y = from.y;
+    this.absolute_position = new PIXI.Point(from.x, from.y);
     this.speed = 4;
     this.fire(to);
 }
