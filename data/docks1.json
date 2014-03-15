@@ -385,5 +385,7 @@
             { "tile" : 2, "flip" : 0, "block" : 0 }
         ]
     ],
-"tileset_size" : 23
+"tileset_size" : 23,
+"startHero" : { "x" : 6, "y" : 6 },
+"startTarget" : { "x" : 6, "y" : 7 }
 }

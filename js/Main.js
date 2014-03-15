@@ -61,8 +61,6 @@ Main.prototype.addToDisplayList = function(object) {
 Main.prototype.assetsLoaded = function() {
     this.addGrid();
     this.setClickEvents();
-    // TODO : move this after level loading when hero position info are loaded.
-    this.bodyguard = this.aHeroIsBorn(); 
     this.loadLevel("docks1");
 };
 
@@ -85,6 +83,8 @@ Main.prototype.addGrid = function() {
  * Now we're all done, we can start the animframe (main loop).
  **/
 Main.prototype.allSet = function() {
+    this.bodyguard = this.aHeroIsBorn(); 
+    this.addToDisplayList(this.bodyguard);
     requestAnimFrame(this.update.bind(this));
 }
 
@@ -141,7 +141,10 @@ Main.prototype.addBulletTowards = function(from, to) {
  **/
 Main.prototype.aHeroIsBorn = function() {
     var textures = getTextureArray("character", 4);
-    var hero = new Mover(textures, 16, 10, new PIXI.Point(96,96), new PIXI.Point(0,0), new PIXI.Point(0,0));
+    var hero = new Mover(textures, 16, 10
+                        , new PIXI.Point(this.level.heroStartingPoint.x,this.level.heroStartingPoint.y)
+                        , new PIXI.Point(0,0)
+                        , new PIXI.Point(0,0));
     return hero;
 };
 
@@ -195,5 +198,4 @@ Main.prototype.parseLevel = function(data) {
     this.grid.setLevel(textures, this.level);
     // TODO : Change this so we can switch easily levels
     this.addToDisplayList(this.grid.outputSprite);
-    this.addToDisplayList(this.bodyguard);
 }

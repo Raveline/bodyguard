@@ -9,6 +9,8 @@ function Level(jsonData) {
     this.tiles = jsonData.tiles;
     this.height = this.tiles.length;
     this.width = this.tiles[0].length;
+    this.heroStartingPoint = computeAbsolutePosition(jsonData.startHero.x, jsonData.startHero.y);
+    this.targetStartingPoint = computeAbsolutePosition(jsonData.startTarget.x, jsonData.startTarget.y);
 }
 
 Level.prototype.getTileValue = function(x,y) {
