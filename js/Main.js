@@ -25,6 +25,8 @@ Main.prototype.prepareScaling = function() {
     this.magnifier = new PIXI.DisplayObjectContainer();
     this.magnifier.scale.x = this.magnifier.scale.y = SCALE_FACTOR;
     this.stage.addChild(this.magnifier);
+    // Can I haz bioutifoul scale, plz ?
+    PIXI.scaleModes.DEFAULT = PIXI.scaleModes.NEAREST;
 }
 
 /**
