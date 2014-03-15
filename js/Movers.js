@@ -38,13 +38,13 @@ Mover.prototype.moveTowards = function(moveTo) {
     this.gotoAndPlay(1);
 }
 
-Mover.prototype.update = function(camera) {
+Mover.prototype.update = function(camera, lvl) {
     if (this.currentFrame > 0) {
         if (this.direction.hasReachedDestination()) {
             this.stopMoving();
         }
         else {
-            this.direction.step();
+            this.direction.step(lvl);
             this.updateImage();
         }
     }
@@ -63,10 +63,6 @@ Mover.prototype.stopMoving = function() {
     this.gotoAndStop(0);
 }
 
-Mover.prototype.computeTilePosition = function() {
-    return new PIXI.Point(~~(this.absolute_position.x / TILE_SIZE),
-                        ~~(this.absolute_position.y / TILE_SIZE));
-}
 
 Mover.prototype.mustBeRendered = function(camera) {
     return this.absolute_position.isInside(camera);

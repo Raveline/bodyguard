@@ -13,8 +13,8 @@ Bullet.prototype.fire = function(to) {
     this.direction.orientateTowards(to);
 }
 
-Bullet.prototype.update = function(camera) {
+Bullet.prototype.update = function(camera, lvl) {
     this.position.x = this.absolute_position.x - camera.x;
     this.position.y = this.absolute_position.y - camera.y;
-    this.direction.step();
+    this.direction.step(lvl);
 }

@@ -20,7 +20,7 @@ Grid.prototype = Object.create(PIXI.DisplayObjectContainer.prototype);
 **/
 Grid.prototype.setLevel = function(textures, lvl) {
     this.lvl = lvl;
-    this.camera.setWorldMaximums((this.lvl[0].length -1) * TILE_SIZE, (this.lvl.length -1) * TILE_SIZE);
+    this.camera.setWorldMaximums((this.lvl[0].length) * TILE_SIZE, (this.lvl.length) * TILE_SIZE);
     this.textures = textures;
     this.buildRenderTexture(this.tilesNumX*TILE_SIZE, this.tilesNumY*TILE_SIZE);
     this.outputSprite = this.sprite || this.build_outputSprite(this.camera.width, this.camera.height);
@@ -63,13 +63,19 @@ Grid.prototype.update = function() {
 Grid.prototype.drawMapOnTexture = function() {
     var startX = ~~ (this.camera.x / TILE_SIZE);
     var startY = ~~ (this.camera.y / TILE_SIZE);
-    var endX = startX + this.tilesNumX+1;
-    var endY = startY + this.tilesNumY+1;
+    var endX = startX + this.tilesNumX +1;
+    var endY = startY + this.tilesNumY + 1;
 
     for (var y = startY; y < endY; y++) {
-        var line = this.lvl[y];
+        var line = [];
+        if (y < this.lvl.length) {
+            line = this.lvl[y];
+        }
         for (var x = startX; x < endX; x++) {
-            var tileValue = line[x].tile;
+            var tileValue = 0;
+            if (x < line.length) {
+                tileValue = this.lvl[y][x].tile;
+            }
             var clip = this.grid[x-startX][y-startY];
             clip.gotoAndStop(tileValue);
             clip.x = (x - startX) * TILE_SIZE - (this.camera.x % TILE_SIZE);

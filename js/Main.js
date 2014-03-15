@@ -26,6 +26,7 @@ Main.prototype.initRenderer = function() {
 }
 
 Main.prototype.loadAssets = function() {
+    PIXI.scaleModes.DEFAULT = PIXI.scaleModes.NEAREST;
     var assets = ["img/character.json", "img/bullet.png", "img/level1.json"];
     loader = new PIXI.AssetLoader(assets);
     loader.onComplete = this.assetsLoaded.bind(this);
@@ -76,7 +77,7 @@ Main.prototype.mouseClicked = function(mouseData) {
     this.debug_3.setText("Mouse at : " + mouseCoords.x + "," + mouseCoords.y);
     event = mouseData.originalEvent;
     if(event.which === 3 || event.button === 2) {
-        this.addBulletTowards(this.bodyguard.position, mouseCoords);
+        this.addBulletTowards(this.bodyguard.absolute_position, mouseCoords);
         return false;
     } else {
         this.bodyguard.moveTowards(mouseCoords);
@@ -104,16 +105,15 @@ Main.prototype.aHeroIsBorn = function() {
 
 Main.prototype.update = function() {
     requestAnimFrame(this.update.bind(this));
-    this.bodyguard.update(this.grid.camera);
-    this.grid.set_camera(this.bodyguard);
+    this.bodyguard.update(this.grid.camera, this.level);
+    this.grid.set_camera(this.bodyguard, this.level);
     this.grid.update();
     for (i in this.projectiles) {
-        this.projectiles[i].update(this.grid.camera);
+        this.projectiles[i].update(this.grid.camera, this.level);
     }
-    var tile_po = this.bodyguard.computeTilePosition();
+    var hero_tile_pos = this.bodyguard.direction.computeTilePosition();
     this.debug_1.setText("Hero position : " + this.bodyguard.absolute_position.x + "," + this.bodyguard.absolute_position.y);
-    this.debug_1.setText("Hero position : " + tile_po.x + "," + tile_po.y);
-    this.debug_2.setText("Hero position : " + this.bodyguard.absolute_position.x + "," + this.bodyguard.absolute_position.y);
+    this.debug_2.setText("Hero position : " + hero_tile_pos.x  + "," + hero_tile_pos.y);
     this.renderer.render(this.stage);
     
 };

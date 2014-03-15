@@ -57,9 +57,41 @@ Direction.prototype.orientateTowards = function(dest) {
     this.obj.rotation = angle + 1.57079633;
 }
 
-Direction.prototype.step = function() {
+Direction.prototype.step = function(lvl) {
     this.obj.absolute_position.add(this.velocity);
-    this.step_numbers--;
+    if (this.test_new_position(lvl)) {
+        this.step_numbers--;
+    } else {
+        this.obj.absolute_position = this.obj.absolute_position.substract(this.velocity);
+        this.destination = this.obj.absolute_position;
+        this.reached();
+    }
+}
+
+Direction.prototype.test_new_position = function(lvl) {
+    var x = ~~(this.obj.absolute_position.x / TILE_SIZE);
+    var y = ~~(this.obj.absolute_position.y / TILE_SIZE);
+
+    var x2 = ~~((this.obj.absolute_position.x + (this.obj.width/2)) / TILE_SIZE);
+    var y2 = ~~(this.obj.absolute_position.y / TILE_SIZE);
+
+    var x3 = ~~(this.obj.absolute_position.x / TILE_SIZE);
+    var y3 = ~~((this.obj.absolute_position.y + (this.obj.height/2)) / TILE_SIZE);
+
+    var x4 = ~~((this.obj.absolute_position.x + (this.obj.width/2)) / TILE_SIZE);
+    var y4 = ~~((this.obj.absolute_position.y + (this.obj.height/2)) / TILE_SIZE);
+
+    return this.is_position_valid(lvl, x, y)
+        && this.is_position_valid(lvl, x2,y2)
+        && this.is_position_valid(lvl, x3,y3)
+        && this.is_position_valid(lvl, x4,y4);
+}
+
+Direction.prototype.is_position_valid = function(lvl,x,y) {
+    if (x >= 0 && y >= 0 && y < lvl.length && x < lvl[0].length) {
+        return lvl[y][x].block == 0;
+    }
+    return false;
 }
 
 Direction.prototype.hasReachedDestination = function() {
@@ -70,4 +102,10 @@ Direction.prototype.reached = function() {
     this.obj.absolute_position = this.destination;
     this.velocity.x = 0;
     this.velocity.y = 0;
+    this.step_numbers = 0;
+}
+
+Direction.prototype.computeTilePosition = function() {
+    return new PIXI.Point(~~(this.obj.absolute_position.x / TILE_SIZE),
+                        ~~(this.obj.absolute_position.y / TILE_SIZE));
 }
