@@ -1,9 +1,23 @@
-/** Extending PIXI.Point so it gives us vectorial utils **/
+/**
+ * This module :
+ * - Extends PIXI.Point so it gives us vectorial utilities.
+ * - Gives the Direction class, that handles any moving object
+ *   moves, direction and positions related issues.
+ * - Provide local-to-global, global-to-local, tile-related
+ *   utils.
+ **/
+
+// **** PIXI POINT ADD-ON ****
+
+
 PIXI.Point.prototype.add = function(p) {
     this.x += p.x;
     this.y += p.y;
 }
 
+// Vector substraction. (BEWARE : return new object)
+// TODO: (Must have been high on coffee when I did that,
+// fix and modify current point.)
 PIXI.Point.prototype.substract = function(p) {
     var x = this.x - p.x;
     var y = this.y - p.y;
@@ -29,6 +43,8 @@ PIXI.Point.prototype.scale = function(s) {
     this.y *= s;
 }
 
+// Check if a point is inside a rectangle.
+// TODO : "w" ? Shouldn't this be width ? Test.
 PIXI.Point.prototype.isInside = function(r) {
     return this.x >= r.x 
     && this.x <= r.x+r.w
@@ -36,12 +52,17 @@ PIXI.Point.prototype.isInside = function(r) {
     && this.y <= r.y+r.h;
 }
 
+// **** DIRECTION CLASS ****
 function Direction(obj) {
+    // The object whowe direction we will manage.
     this.obj = obj;
+    // Velocity of movement.
     this.velocity = new PIXI.Point(0,0);
+    // Number of steps till end of current move.
     this.step_numbers = 0;
 }
 
+// Make a moving object take a hike towards somewhere.
 Direction.prototype.moveTowards = function(dest) {
     this.destination = dest.clone();
     var moveVect = dest.substract(this.obj.absolute_position);
@@ -51,12 +72,18 @@ Direction.prototype.moveTowards = function(dest) {
     this.step_numbers = ~~(lengthMove / this.velocity.length());
 }
 
+// Rotate an object towards a given direction.
 Direction.prototype.orientateTowards = function(dest) {
     var vect = dest.substract(this.obj.absolute_position);
     var angle = Math.atan2(vect.y, vect.x);
+    // Caveat : objects are "by default" drawn facing "north",
+    // but rotation starts at 1,1, so we need to correct thusly.
     this.obj.rotation = angle + 1.57079633;
 }
 
+// Make a step in the current direction.
+// Check if the step is legal.
+// Check if we're done with movement.
 Direction.prototype.step = function(level) {
     this.obj.absolute_position.add(this.velocity);
     if (this.test_new_position(level)) {
@@ -68,6 +95,8 @@ Direction.prototype.step = function(level) {
     }
 }
 
+// Check if position is "legal".
+// 4-sides collision checking.
 Direction.prototype.test_new_position = function(level) {
     var x = ~~(this.obj.absolute_position.x / TILE_SIZE);
     var y = ~~(this.obj.absolute_position.y / TILE_SIZE);
@@ -87,6 +116,7 @@ Direction.prototype.test_new_position = function(level) {
         && this.is_position_valid(level, x4,y4);
 }
 
+// Check if a given position (in tile) is walkable.
 Direction.prototype.is_position_valid = function(level,x,y) {
     if (x >= 0 && y >= 0 && y < level.height && x < level.width) {
         return level.isWalkable(x,y);
@@ -94,10 +124,15 @@ Direction.prototype.is_position_valid = function(level,x,y) {
     return false;
 }
 
+// Check if we've accomplished all necessary steps.
 Direction.prototype.hasReachedDestination = function() {
     return this.step_numbers == 0;
 }
 
+// When destination has been reached :
+// - Position should be equal to destination.
+// - Velocity should be reduced to 0.
+// - Step count should be reduced to 0.
 Direction.prototype.reached = function() {
     this.obj.absolute_position = this.destination;
     this.velocity.x = 0;
@@ -105,7 +140,19 @@ Direction.prototype.reached = function() {
     this.step_numbers = 0;
 }
 
-Direction.prototype.computeTilePosition = function() {
-    return new PIXI.Point(~~(this.obj.absolute_position.x / TILE_SIZE),
-                        ~~(this.obj.absolute_position.y / TILE_SIZE));
+/**
+ * Given the related object absolute position, compute its
+ * current tile.
+ **/
+function computeTilePosition(x,y) {
+    return new PIXI.Point(~~(x / TILE_SIZE),
+                        ~~(y / TILE_SIZE));
+}
+
+/**
+ * Given a position in tiles, compute the corresponding
+ * absolute position.
+ **/
+function computeAbsolutePosition(x,y) {
+    return new PIXI.Point(x * TILE_SIZE, y * TILE_SIZE);
 }
