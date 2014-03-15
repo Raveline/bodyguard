@@ -15,12 +15,12 @@ Grid.prototype = Object.create(PIXI.DisplayObjectContainer.prototype);
 
 /**
  * Set the level displayed.
- * Will associate the lvl variable, calibrate the camera
+ * Will associate the level variable, calibrate the camera
  * and store the tileset. 
 **/
-Grid.prototype.setLevel = function(textures, lvl) {
-    this.lvl = lvl;
-    this.camera.setWorldMaximums((this.lvl[0].length) * TILE_SIZE, (this.lvl.length) * TILE_SIZE);
+Grid.prototype.setLevel = function(textures, level) {
+    this.level = level;
+    this.camera.setWorldMaximums(this.level.width * TILE_SIZE, this.level.height * TILE_SIZE);
     this.textures = textures;
     this.buildRenderTexture(this.tilesNumX*TILE_SIZE, this.tilesNumY*TILE_SIZE);
     this.outputSprite = this.sprite || this.build_outputSprite(this.camera.width, this.camera.height);
@@ -68,13 +68,11 @@ Grid.prototype.drawMapOnTexture = function() {
 
     for (var y = startY; y < endY; y++) {
         var line = [];
-        if (y < this.lvl.length) {
-            line = this.lvl[y];
-        }
+        var real_line = y < this.level.height;
         for (var x = startX; x < endX; x++) {
             var tileValue = 0;
-            if (x < line.length) {
-                tileValue = this.lvl[y][x].tile;
+            if (real_line && x < this.level.width) {
+                tileValue = this.level.getTileValue(x,y);
             }
             var clip = this.grid[x-startX][y-startY];
             clip.gotoAndStop(tileValue);

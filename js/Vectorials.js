@@ -57,9 +57,9 @@ Direction.prototype.orientateTowards = function(dest) {
     this.obj.rotation = angle + 1.57079633;
 }
 
-Direction.prototype.step = function(lvl) {
+Direction.prototype.step = function(level) {
     this.obj.absolute_position.add(this.velocity);
-    if (this.test_new_position(lvl)) {
+    if (this.test_new_position(level)) {
         this.step_numbers--;
     } else {
         this.obj.absolute_position = this.obj.absolute_position.substract(this.velocity);
@@ -68,7 +68,7 @@ Direction.prototype.step = function(lvl) {
     }
 }
 
-Direction.prototype.test_new_position = function(lvl) {
+Direction.prototype.test_new_position = function(level) {
     var x = ~~(this.obj.absolute_position.x / TILE_SIZE);
     var y = ~~(this.obj.absolute_position.y / TILE_SIZE);
 
@@ -81,15 +81,15 @@ Direction.prototype.test_new_position = function(lvl) {
     var x4 = ~~((this.obj.absolute_position.x + (this.obj.width/2)) / TILE_SIZE);
     var y4 = ~~((this.obj.absolute_position.y + (this.obj.height/2)) / TILE_SIZE);
 
-    return this.is_position_valid(lvl, x, y)
-        && this.is_position_valid(lvl, x2,y2)
-        && this.is_position_valid(lvl, x3,y3)
-        && this.is_position_valid(lvl, x4,y4);
+    return this.is_position_valid(level, x, y)
+        && this.is_position_valid(level, x2,y2)
+        && this.is_position_valid(level, x3,y3)
+        && this.is_position_valid(level, x4,y4);
 }
 
-Direction.prototype.is_position_valid = function(lvl,x,y) {
-    if (x >= 0 && y >= 0 && y < lvl.length && x < lvl[0].length) {
-        return lvl[y][x].block == 0;
+Direction.prototype.is_position_valid = function(level,x,y) {
+    if (x >= 0 && y >= 0 && y < level.height && x < level.width) {
+        return level.isWalkable(x,y);
     }
     return false;
 }
