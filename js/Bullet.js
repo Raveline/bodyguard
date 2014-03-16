@@ -1,13 +1,12 @@
-function Bullet(from, to) {
+function Bullet() {
     PIXI.Sprite.call(this, PIXI.Texture.fromImage("img/bullet.png"));
-    this.absolute_position = new PIXI.Point(from.x, from.y);
     this.speed = 4;
-    this.fire(to);
 }
 Bullet.constructor = Bullet;
 Bullet.prototype = Object.create(PIXI.Sprite.prototype);
 
-Bullet.prototype.fire = function(to) {
+Bullet.prototype.fire = function(from, to) {
+    this.absolute_position = new PIXI.Point(from.x, from.y);
     this.direction = new Direction(this);
     this.direction.moveTowards(to.clone());
     this.direction.orientateTowards(to);

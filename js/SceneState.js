@@ -10,7 +10,17 @@ function SceneState(levelName, stage, grid, magnifier) {
     this.grid = grid;
     this.magnifier = magnifier;
     this.ready = false;
+    
     this.loadLevel(levelName);
+    this.preparePools();
+}
+
+SceneState.prototype.preparePools = function() {   
+    var createBullet = function() {
+        return new Bullet();
+    }
+    this.bulletPool = new ObjectPool(createBullet, 10);
+    // TODO : add villain pool.
 }
 
 SceneState.prototype.allSet = function() {
@@ -93,7 +103,8 @@ SceneState.prototype.repositionMouse = function(coords) {
  * Fire a bullet from X to Y. 
  **/
 SceneState.prototype.addBulletTowards = function(from, to) {
-    var projectile = new Bullet(from, to);
+    var projectile = this.bulletPool.borrow();
+    projectile.fire(from, to);
     this.projectiles.push(projectile);
     this.addToDisplayList(projectile);
 }
