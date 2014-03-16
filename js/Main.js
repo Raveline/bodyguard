@@ -15,10 +15,10 @@ function Main() {
  */
 Main.prototype.initRenderer = function() {
     this.stage = new PIXI.Stage(0xFFFFFF);
-    this.renderer = PIXI.autoDetectRenderer(768, 768);
+    this.renderer = PIXI.autoDetectRenderer(SCREEN_WIDTH, SCREEN_HEIGHT);
     document.body.appendChild(this.renderer.view);
     this.prepareScaling();
-    this.grid = new Grid(12,12);
+    this.grid = new Grid(GRID_WIDTH, GRID_HEIGHT);
     this.magnifier.addChild(this.grid);
 }
 
@@ -56,7 +56,7 @@ Main.prototype.loadAssets = function() {
  ** */
 Main.prototype.assetsLoaded = function() {
     this.state = new SceneState("docks1", this.stage, this.grid, this.magnifier);
-    this.update();
+    requestAnimFrame(this.update.bind(this));
 };
 
 /**
@@ -65,8 +65,10 @@ Main.prototype.assetsLoaded = function() {
  **/
 Main.prototype.update = function() {
     requestAnimFrame(this.update.bind(this));
-    this.state.update();
-    this.grid.update();
+    if (this.state.ready) {
+       this.state.update();
+       this.grid.update();
+    }
     this.renderer.render(this.stage);
 };
 
