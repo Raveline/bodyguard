@@ -1,4 +1,4 @@
-function Mover(textures, width, height, position, velocity, acceleration) {
+function Mover(textures, width, height, position, coloring) {
     PIXI.MovieClip.call(this, textures);
     this.width = width;
     this.height = height;
@@ -13,20 +13,17 @@ function Mover(textures, width, height, position, velocity, acceleration) {
     this.absolute_position = position.clone();
 
     this.direction = new Direction(this);
+
+    this.setColor(coloring);
 }
 Mover.constructor = Mover;
 Mover.prototype = Object.create(PIXI.MovieClip.prototype);
 
 Mover.prototype.setColor = function(matrix) {
-    /* Exemple : blue color matrix 
-
     var colorMatrix = new PIXI.ColorMatrixFilter();
-    colorMatrix.matrix = [ .2,.2,0,0,
-                            0,.2,1,0,
-                            .5,0,0,1,
-                            0,0,1,1]; */
+    colorMatrix.matrix = matrix;
 
-    this.filters = [matrix];
+    this.filters = [colorMatrix];
 }
 
 Mover.prototype.orientationTowards = function(lookingAt) {
