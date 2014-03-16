@@ -56,11 +56,23 @@ SceneState.prototype.update = function() {
     this.bodyguard.update(this.grid.camera, this.level);
     this.target.update(this.grid.camera, this.level);
     this.grid.set_camera(this.bodyguard, this.level);
-    for (i in this.projectiles) {
-        this.projectiles[i].update(this.grid.camera, this.level);
-    }
+    this.leadManagement();
     for (i in this.villains) {
         this.villains[i].update(this.grid.camera, this.level);
+    }
+}
+
+SceneState.prototype.leadManagement = function() {
+    var toRemove = [];
+    for (var i = 0; i < this.projectiles.length; i++) {
+        this.projectiles[i].update(this.grid.camera, this.level);
+        this.projectiles[i].checkCollision(this.villains);
+        if (!this.projectiles[i].firing) { // This bird has flown
+            toRemove.push(this.projectiles[i]);
+        }
+    }
+    for (i in toRemove) {
+        this.removeBullet(toRemove[i]);
     }
 }
 
@@ -87,7 +99,7 @@ SceneState.prototype.mouseClicked = function(mouseData) {
     if(event.which === 3 || event.button === 2) {
         this.addBulletTowards(this.bodyguard.absolute_position, mouseCoords);
     } else {
-        this.bodyguard.moveTowards(mouseCoords);
+        this.bodyguard.moveTo(mouseCoords);
     }
 }
 
@@ -109,9 +121,14 @@ SceneState.prototype.addBulletTowards = function(from, to) {
     this.addToDisplayList(projectile);
 }
 
+SceneState.prototype.removeBullet = function(bullet) {
+    this.removeFromDisplayList(bullet);
+    this.projectiles.splice(this.projectiles.indexOf(bullet), 1);
+    this.bulletPool.giveBack(bullet);
+}
+
 /**
  * Generate a Hero.
- * TODO : Move this in a GameState object.
  **/
 SceneState.prototype.aHeroIsBorn = function() {
     var textures = getTextureArray("character", 4);
@@ -139,6 +156,10 @@ SceneState.prototype.addTarget = function() {
 
 SceneState.prototype.addToDisplayList = function(elem) {
     this.magnifier.addChild(elem);
+}
+
+SceneState.prototype.removeFromDisplayList = function(elem) {
+    this.magnifier.removeChild(elem);
 }
 
 SceneState.prototype.generateVillain = function(position) {

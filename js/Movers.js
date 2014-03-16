@@ -30,8 +30,8 @@ Mover.prototype.orientationTowards = function(lookingAt) {
     this.direction.orientateTowards(lookingAt);
 }
 
-Mover.prototype.moveTowards = function(moveTo) {
-    this.direction.moveTowards(moveTo);
+Mover.prototype.moveTo = function(moveTo) {
+    this.direction.moveTo(moveTo);
     this.gotoAndPlay(1);
 }
 
@@ -60,7 +60,17 @@ Mover.prototype.stopMoving = function() {
     this.gotoAndStop(0);
 }
 
-
 Mover.prototype.mustBeRendered = function(camera) {
     return this.absolute_position.isInside(camera);
+}
+
+Mover.prototype.testHit = function (projectile) {
+    return projectile.absolute_position.x >= this.direction.realX()
+        && projectile.absolute_position.x <= this.direction.realX2()
+        && projectile.absolute_position.y >= this.direction.realY()
+        && projectile.absolute_position.y <= this.direction.realY2();
+}
+
+Mover.prototype.hurt = function() {
+    // TODO : kill !
 }
