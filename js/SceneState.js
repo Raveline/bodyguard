@@ -9,18 +9,19 @@ function SceneState(levelName, stage, grid, magnifier) {
     this.stage = stage;
     this.grid = grid;
     this.magnifier = magnifier;
-    this.init(levelName);
-}
-
-SceneState.prototype.init = function(levelName) {
-    this.setMouseEvents();
+    this.ready = false;
     this.loadLevel(levelName);
 }
 
 SceneState.prototype.allSet = function() {
     this.bodyguard = this.aHeroIsBorn(); 
+    this.target = this.addTarget();
+    // Test code : adding a villain
+    this.generateVillain(new PIXI.Point(100,64));
     this.addToDisplayList(this.bodyguard);
-    requestAnimFrame(this.update.bind(this));
+    this.addToDisplayList(this.target);
+    this.setMouseEvents();
+    this.ready = true;
 }
 
 SceneState.prototype.loadLevel = function(levelName) {
@@ -43,6 +44,7 @@ SceneState.prototype.parseLevel = function(data) {
 
 SceneState.prototype.update = function() {
     this.bodyguard.update(this.grid.camera, this.level);
+    this.target.update(this.grid.camera, this.level);
     this.grid.set_camera(this.bodyguard, this.level);
     for (i in this.projectiles) {
         this.projectiles[i].update(this.grid.camera, this.level);
@@ -102,13 +104,40 @@ SceneState.prototype.addBulletTowards = function(from, to) {
  **/
 SceneState.prototype.aHeroIsBorn = function() {
     var textures = getTextureArray("character", 4);
+    // I'm blue, dabadee dabadoo
+    var colorMatrix = [ .2,.2,0,0,
+                        0,.2,1,0,
+                        .5,0,0,1,
+                        0,0,1,1];
     var hero = new Mover(textures, 16, 10
-                        , new PIXI.Point(this.level.heroStartingPoint.x,this.level.heroStartingPoint.y)
-                        , new PIXI.Point(0,0)
-                        , new PIXI.Point(0,0));
+                        , new PIXI.Point(this.level.heroStartingPoint.x,this.level.heroStartingPoint.y), colorMatrix);
     return hero;
 };
 
+SceneState.prototype.addTarget = function() {
+    var textures = getTextureArray("character", 4);
+    // The reds are coming !
+    var colorMatrix = [ .2,.2,.2,0,
+                        .8,.8,.8,0,
+                        .2,.2,.2,0,
+                        .2,.2,1,1];
+    var target = new Mover(textures, 16, 10
+                        , new PIXI.Point(this.level.targetStartingPoint.x, this.level.targetStartingPoint.y), colorMatrix);
+    return target;
+}
+
 SceneState.prototype.addToDisplayList = function(elem) {
     this.magnifier.addChild(elem);
+}
+
+SceneState.prototype.generateVillain = function(position) {
+    var textures = getTextureArray("character", 4);
+    // The reds are coming !
+    var colorMatrix = [ 1,1,1,0,
+                        .2,.2,.2,0,
+                        .2,.2,.2,0,
+                        .2,.2,1,1];
+    var villain = new Mover(textures, 16, 10, position, colorMatrix);
+    this.villains.push(villain);
+    this.addToDisplayList(villain);
 }
