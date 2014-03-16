@@ -62,14 +62,23 @@ function Direction(obj) {
     this.step_numbers = 0;
 }
 
-// Make a moving object take a hike towards somewhere.
-Direction.prototype.moveTowards = function(dest) {
+// Make a moving object move to a given destination
+Direction.prototype.moveTo = function(dest) {
     this.destination = dest.clone();
     var moveVect = dest.substract(this.obj.absolute_position);
     var lengthMove = moveVect.length();
     this.velocity = moveVect.normalize();
     this.velocity.scale(this.obj.speed);
     this.step_numbers = ~~(lengthMove / this.velocity.length());
+}
+
+// Make a moving object take a hike towards somewhere.
+Direction.prototype.moveTowards = function(dest) {
+    this.destination = dest.clone();
+    var moveVect = dest.substract(this.obj.absolute_position);
+    this.velocity = moveVect.normalize();
+    this.velocity.scale(this.obj.speed);
+    this.step_number = 10000; // Ugly hack so move won't stop. TODO : find a cleaner way to do this.
 }
 
 // Rotate an object towards a given direction.
@@ -98,17 +107,17 @@ Direction.prototype.step = function(level) {
 // Check if position is "legal".
 // 4-sides collision checking.
 Direction.prototype.test_new_position = function(level) {
-    var x = ~~(this.obj.absolute_position.x / TILE_SIZE);
-    var y = ~~(this.obj.absolute_position.y / TILE_SIZE);
+    var x = ~~ ( (this.realX() + 2) / TILE_SIZE);
+    var y = ~~ ( (this.realY() + 2) / TILE_SIZE);
 
-    var x2 = ~~((this.obj.absolute_position.x + (this.obj.width/2)) / TILE_SIZE);
-    var y2 = ~~(this.obj.absolute_position.y / TILE_SIZE);
+    var x2 = ~~( (this.realX2() - 2) / TILE_SIZE);
+    var y2 = ~~( (this.realY() + 2) / TILE_SIZE);
 
-    var x3 = ~~(this.obj.absolute_position.x / TILE_SIZE);
-    var y3 = ~~((this.obj.absolute_position.y + (this.obj.height/2)) / TILE_SIZE);
+    var x3 = ~~( (this.realX() + 2) / TILE_SIZE);
+    var y3 = ~~( (this.realY2() - 2) / TILE_SIZE);
 
-    var x4 = ~~((this.obj.absolute_position.x + (this.obj.width/2)) / TILE_SIZE);
-    var y4 = ~~((this.obj.absolute_position.y + (this.obj.height/2)) / TILE_SIZE);
+    var x4 = ~~( (this.realX2() - 2) / TILE_SIZE);
+    var y4 = ~~( (this.realY2() - 2) / TILE_SIZE);
 
     return this.is_position_valid(level, x, y)
         && this.is_position_valid(level, x2,y2)
@@ -138,6 +147,22 @@ Direction.prototype.reached = function() {
     this.velocity.x = 0;
     this.velocity.y = 0;
     this.step_numbers = 0;
+}
+
+Direction.prototype.realX = function() {
+    return this.obj.absolute_position.x - this.obj.width/2;
+}
+
+Direction.prototype.realY = function() {
+    return this.obj.absolute_position.y - this.obj.height/2;
+}
+
+Direction.prototype.realX2 = function() {
+    return this.obj.absolute_position.x + this.obj.width/2;
+}
+
+Direction.prototype.realY2 = function() {
+    return this.obj.absolute_position.y + this.obj.height/2;
 }
 
 /**
