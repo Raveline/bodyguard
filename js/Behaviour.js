@@ -15,15 +15,15 @@ function BaddiesBrain(generableBaddies) {
 }
 
 
-BaddiesBrain.tick = function(tick) {
+BaddiesBrain.prototype.tick = function(tick) {
     this.tickTime += tick;
-    if (tickTime >= DELTA) {
+    if (this.tickTime >= DELTA) {
         this.tickTime = 0;
         this.update();
     }
 }
 
-BaddiesBrain.update = function() {
+BaddiesBrain.prototype.update = function() {
     this.checkIfNeedBaddies();
     this.readyToFireBaddies();
     this.correctMovingBaddies();
@@ -31,7 +31,8 @@ BaddiesBrain.update = function() {
 }
 
 // Does the IA need more baddies ?
-BaddiesBrain.checkIfNeedBaddies = function() {
+BaddiesBrain.prototype.checkIfNeedBaddies = function() {
+    console.log("UPDATE !");
     if (!this.needBaddies 
             && this.numberOfBaddies < BADDIES_NEED_MAX
             && this.generatedBaddies < this.generableBaddies ) {
@@ -39,11 +40,15 @@ BaddiesBrain.checkIfNeedBaddies = function() {
     }
 }
 
-BaddiesBrain.readyToFireBaddies = function() {
+BaddiesBrain.prototype.addNewBaddy = function(baddy) {
+    this.inactiveBaddies.push[baddy];
 }
 
-BaddiesBrain.correctMovingBaddies = function() {
+BaddiesBrain.prototype.readyToFireBaddies = function() {
 }
 
-BaddiesBrain.moveInactiveBaddies = function() {
+BaddiesBrain.prototype.correctMovingBaddies = function() {
+}
+
+BaddiesBrain.prototype.moveInactiveBaddies = function() {
 }

@@ -8,6 +8,8 @@ SCREEN_HEIGHT = GRID_HEIGHT * TILE_SIZE * SCALE_FACTOR;
 function Main() {
     this.initRenderer(); // PIXI rendering
     this.loadAssets();  
+    this.lastTime = Date.now();
+    this.timeSinceLastFrame = 0;
 }
 
 /**
@@ -65,8 +67,11 @@ Main.prototype.assetsLoaded = function() {
  **/
 Main.prototype.update = function() {
     requestAnimFrame(this.update.bind(this));
+    var now = Date.now();
+    this.timeSinceLastFrame = now - this.lastTime;
+    this.lastTime = now;
     if (this.state.ready) {
-       this.state.update();
+       this.state.update(this.timeSinceLastFrame);
        this.grid.update();
     }
     this.renderer.render(this.stage);

@@ -10,6 +10,7 @@ function SceneState(levelName, stage, grid, magnifier) {
     this.grid = grid;
     this.magnifier = magnifier;
     this.ready = false;
+    this.ia = new BaddiesBrain(10);
     
     this.loadLevel(levelName);
     this.preparePools();
@@ -52,7 +53,8 @@ SceneState.prototype.parseLevel = function(data) {
     this.addToDisplayList(this.grid.outputSprite);
 }
 
-SceneState.prototype.update = function() {
+SceneState.prototype.update = function(elapsedTime) {
+    this.ia.tick(elapsedTime);
     this.bodyguard.update(this.grid.camera, this.level);
     this.target.update(this.grid.camera, this.level);
     this.grid.set_camera(this.bodyguard, this.level);
