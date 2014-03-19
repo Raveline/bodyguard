@@ -13,11 +13,15 @@ function Mover(textures, width, height, position, coloring) {
     this.absolute_position = position.clone();
 
     this.direction = new Direction(this);
-
     this.setColor(coloring);
+    this.behaviour = 0;
 }
 Mover.constructor = Mover;
 Mover.prototype = Object.create(PIXI.MovieClip.prototype);
+
+Mover.prototype.attachBehaviour = function(behaviour) {
+    this.behaviour = behaviour;
+}
 
 Mover.prototype.setColor = function(matrix) {
     var colorMatrix = new PIXI.ColorMatrixFilter();
@@ -35,7 +39,10 @@ Mover.prototype.moveTo = function(moveTo) {
     this.gotoAndPlay(1);
 }
 
-Mover.prototype.update = function(camera, lvl) {
+Mover.prototype.update = function(camera, tick, lvl) {
+    if (this.behaviour != 0) {
+        this.behaviour.tick(tick);
+    }
     if (this.currentFrame > 0) {
         if (this.direction.hasReachedDestination()) {
             this.stopMoving();

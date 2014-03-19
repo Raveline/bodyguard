@@ -1,3 +1,4 @@
+BADDIES_NEED_MAX = 3;
 /**
  * Main "game" state. The hero is a bodyguard
  * protecting his targets from baddies coming
@@ -6,6 +7,7 @@
 function SceneState(levelName, stage, grid, magnifier) {
     this.projectiles = [];
     this.villains = [];
+    this.generatedBaddies = 0;
     this.stage = stage;
     this.grid = grid;
     this.magnifier = magnifier;
@@ -26,7 +28,6 @@ SceneState.prototype.preparePools = function() {
 SceneState.prototype.allSet = function() {
     this.bodyguard = this.aHeroIsBorn(); 
     this.target = this.addTarget();
-    this.ia = new BaddiesBrain(10, this.level, this.target);
     // Test code : adding a villain
     this.generateVillain(new PIXI.Point(250,64));
     this.addToDisplayList(this.bodyguard);
@@ -54,13 +55,20 @@ SceneState.prototype.parseLevel = function(data) {
 }
 
 SceneState.prototype.update = function(elapsedTime) {
-    this.ia.tick(elapsedTime);
-    this.bodyguard.update(this.grid.camera, this.level);
-    this.target.update(this.grid.camera, this.level);
-    this.grid.set_camera(this.bodyguard, this.level);
+    this.bodyguard.update(this.grid.camera, elapsedTime, this.level);
+    this.target.update(this.grid.camera, elapsedTime, this.level);
+    this.grid.set_camera(this.bodyguard, elapsedTime, this.level);
     this.leadManagement();
     for (i in this.villains) {
-        this.villains[i].update(this.grid.camera, this.level);
+        this.villains[i].update(this.grid.camera, elapsedTime, this.level);
+    }
+}
+
+SceneState.prototype.checkIfNeedBaddies = function() {
+    if (!this.needBaddies 
+            && this.villains.length < BADDIES_NEED_MAX
+            && this.generatedBaddies < this.generableBaddies ) {
+        this.needBaddies = true;
     }
 }
 
@@ -172,7 +180,8 @@ SceneState.prototype.generateVillain = function(position) {
                         .2,.2,.2,0,
                         .2,.2,1,1];
     var villain = new Mover(textures, 16, 10, position, colorMatrix);
+    var behaviour = new ShooterBehaviour(villain, this.level, this.target);
+    villain.attachBehaviour(behaviour);
     this.villains.push(villain);
     this.addToDisplayList(villain);
-    this.ia.addNewBaddy(villain);
 }
