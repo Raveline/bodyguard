@@ -74,3 +74,7 @@ Mover.prototype.testHit = function (projectile) {
 Mover.prototype.hurt = function() {
     // TODO : kill !
 }
+
+Mover.prototype.computeTilePosition = function() {
+    return computeTilePosition(this.absolute_position.x, this.absolute_position.y);
+}

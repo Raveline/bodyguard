@@ -170,8 +170,8 @@ Direction.prototype.realY2 = function() {
  * current tile.
  **/
 function computeTilePosition(x,y) {
-    return new PIXI.Point(~~(x / TILE_SIZE),
-                        ~~(y / TILE_SIZE));
+    return new PIXI.Point(numberToTile(x),
+                        numberToTile(y));
 }
 
 /**
@@ -180,4 +180,8 @@ function computeTilePosition(x,y) {
  **/
 function computeAbsolutePosition(x,y) {
     return new PIXI.Point(x * TILE_SIZE, y * TILE_SIZE);
+}
+
+function numberToTile(n) {
+    return ~~(n / TILE_SIZE);
 }

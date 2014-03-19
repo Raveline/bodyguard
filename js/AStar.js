@@ -247,7 +247,7 @@ function GraphNode(x, y, type) {
         x: x,
         y: y
     };
-    this.type = type;
+    this.type = type.block == 0 ? 1 : 0;
 }
 
 GraphNode.prototype.toString = function() {

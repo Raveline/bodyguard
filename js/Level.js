@@ -11,6 +11,7 @@ function Level(jsonData) {
     this.width = this.tiles[0].length;
     this.heroStartingPoint = computeAbsolutePosition(jsonData.startHero.x, jsonData.startHero.y);
     this.targetStartingPoint = computeAbsolutePosition(jsonData.startTarget.x, jsonData.startTarget.y);
+    this.preparePathComputing();
 }
 
 Level.prototype.getTileValue = function(x,y) {
@@ -19,4 +20,14 @@ Level.prototype.getTileValue = function(x,y) {
 
 Level.prototype.isWalkable = function(x,y) {
     return this.tiles[y][x].block == 0;
+}
+
+Level.prototype.preparePathComputing = function() {
+    this.graph = new Graph(this.tiles);
+}
+
+Level.prototype.computePath = function(from, to) {
+    var from = this.graph.nodes[from.y][from.x];
+    var to = this.graph.nodes[to.y][to.x];
+    return astar.search(this.graph.nodes, from, to, true);
 }

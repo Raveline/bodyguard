@@ -10,7 +10,6 @@ function SceneState(levelName, stage, grid, magnifier) {
     this.grid = grid;
     this.magnifier = magnifier;
     this.ready = false;
-    this.ia = new BaddiesBrain(10);
     
     this.loadLevel(levelName);
     this.preparePools();
@@ -27,8 +26,9 @@ SceneState.prototype.preparePools = function() {
 SceneState.prototype.allSet = function() {
     this.bodyguard = this.aHeroIsBorn(); 
     this.target = this.addTarget();
+    this.ia = new BaddiesBrain(10, this.level, this.target);
     // Test code : adding a villain
-    this.generateVillain(new PIXI.Point(100,64));
+    this.generateVillain(new PIXI.Point(250,64));
     this.addToDisplayList(this.bodyguard);
     this.addToDisplayList(this.target);
     this.setMouseEvents();
@@ -174,4 +174,5 @@ SceneState.prototype.generateVillain = function(position) {
     var villain = new Mover(textures, 16, 10, position, colorMatrix);
     this.villains.push(villain);
     this.addToDisplayList(villain);
+    this.ia.addNewBaddy(villain);
 }
