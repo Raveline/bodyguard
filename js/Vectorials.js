@@ -99,9 +99,13 @@ Direction.prototype.step = function(level) {
         this.step_numbers--;
     } else {
         this.obj.absolute_position = this.obj.absolute_position.substract(this.velocity);
-        this.destination = this.obj.absolute_position;
-        this.reached();
+        this.stop();
     }
+}
+
+Direction.prototype.stop = function() {
+    this.destination = this.obj.absolute_position;
+    this.reached();
 }
 
 // Check if position is "legal".

@@ -15,6 +15,7 @@ function Mover(textures, width, height, position, coloring) {
     this.direction = new Direction(this);
     this.setColor(coloring);
     this.behaviour = 0;
+    this.alive = true;
 }
 Mover.constructor = Mover;
 Mover.prototype = Object.create(PIXI.MovieClip.prototype);
@@ -40,10 +41,10 @@ Mover.prototype.moveTo = function(moveTo) {
 }
 
 Mover.prototype.update = function(camera, tick, lvl) {
-    if (this.behaviour != 0) {
+    if (this.behaviour != 0 && this.alive) {
         this.behaviour.tick(tick);
     }
-    if (this.currentFrame > 0) {
+    if (this.currentFrame > 0 && this.alive) {
         if (this.direction.hasReachedDestination()) {
             this.stopMoving();
         }
@@ -79,7 +80,9 @@ Mover.prototype.testHit = function (projectile) {
 }
 
 Mover.prototype.hurt = function() {
-    // TODO : kill !
+    this.gotoAndStop(5);
+    this.direction.stop();
+    this.alive = false;
 }
 
 Mover.prototype.computeTilePosition = function() {

@@ -141,7 +141,7 @@ SceneState.prototype.removeBullet = function(bullet) {
  * Generate a Hero.
  **/
 SceneState.prototype.aHeroIsBorn = function() {
-    var textures = getTextureArray("character", 4);
+    var textures = getTextureArray("character", 6);
     // I'm blue, dabadee dabadoo
     var colorMatrix = [ .2,.2,0,0,
                         0,.2,1,0,
@@ -153,7 +153,7 @@ SceneState.prototype.aHeroIsBorn = function() {
 };
 
 SceneState.prototype.addTarget = function() {
-    var textures = getTextureArray("character", 4);
+    var textures = getTextureArray("character", 6);
     // The reds are coming !
     var colorMatrix = [ .2,.2,.2,0,
                         .8,.8,.8,0,
@@ -173,7 +173,7 @@ SceneState.prototype.removeFromDisplayList = function(elem) {
 }
 
 SceneState.prototype.generateVillain = function(position) {
-    var textures = getTextureArray("character", 4);
+    var textures = getTextureArray("character", 6);
     // The reds are coming !
     var colorMatrix = [ 1,1,1,0,
                         .2,.2,.2,0,
