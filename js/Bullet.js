@@ -31,3 +31,7 @@ Bullet.prototype.checkCollision = function(people) {
         }
     }
 }
+
+Bullet.prototype.stopMoving = function() {
+    this.firing = false;
+}

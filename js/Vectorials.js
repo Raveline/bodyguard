@@ -1,3 +1,4 @@
+MARGIN = 5;
 /**
  * This module :
  * - Extends PIXI.Point so it gives us vectorial utilities.
@@ -90,6 +91,12 @@ Direction.prototype.orientateTowards = function(dest) {
     this.obj.rotation = angle + 1.57079633;
 }
 
+Direction.prototype.update = function(level) {
+    if (!this.hasReachedDestination()) {
+        this.step(level);
+    }
+}
+
 // Make a step in the current direction.
 // Check if the step is legal.
 // Check if we're done with movement.
@@ -97,6 +104,9 @@ Direction.prototype.step = function(level) {
     this.obj.absolute_position.add(this.velocity);
     if (this.test_new_position(level)) {
         this.step_numbers--;
+        if (this.step_numbers == 0) {
+            this.stop();
+        }
     } else {
         this.obj.absolute_position = this.obj.absolute_position.substract(this.velocity);
         this.stop();
@@ -111,17 +121,17 @@ Direction.prototype.stop = function() {
 // Check if position is "legal".
 // 4-sides collision checking.
 Direction.prototype.test_new_position = function(level) {
-    var x = ~~ ( (this.realX() + 2) / TILE_SIZE);
-    var y = ~~ ( (this.realY() + 2) / TILE_SIZE);
+    var x = ~~ ( (this.realX() + MARGIN) / TILE_SIZE);
+    var y = ~~ ( (this.realY() + MARGIN) / TILE_SIZE);
 
-    var x2 = ~~( (this.realX2() - 2) / TILE_SIZE);
-    var y2 = ~~( (this.realY() + 2) / TILE_SIZE);
+    var x2 = ~~( (this.realX2() - MARGIN) / TILE_SIZE);
+    var y2 = ~~( (this.realY() + MARGIN) / TILE_SIZE);
 
-    var x3 = ~~( (this.realX() + 2) / TILE_SIZE);
-    var y3 = ~~( (this.realY2() - 2) / TILE_SIZE);
+    var x3 = ~~( (this.realX() + MARGIN) / TILE_SIZE);
+    var y3 = ~~( (this.realY2() - MARGIN) / TILE_SIZE);
 
-    var x4 = ~~( (this.realX2() - 2) / TILE_SIZE);
-    var y4 = ~~( (this.realY2() - 2) / TILE_SIZE);
+    var x4 = ~~( (this.realX2() - MARGIN) / TILE_SIZE);
+    var y4 = ~~( (this.realY2() - MARGIN) / TILE_SIZE);
 
     return this.is_position_valid(level, x, y)
         && this.is_position_valid(level, x2,y2)
@@ -151,6 +161,7 @@ Direction.prototype.reached = function() {
     this.velocity.x = 0;
     this.velocity.y = 0;
     this.step_numbers = 0;
+    this.obj.stopMoving();
 }
 
 Direction.prototype.realX = function() {

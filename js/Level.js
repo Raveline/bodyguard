@@ -11,6 +11,8 @@ function Level(jsonData) {
     this.width = this.tiles[0].length;
     this.heroStartingPoint = computeAbsolutePosition(jsonData.startHero.x, jsonData.startHero.y);
     this.targetStartingPoint = computeAbsolutePosition(jsonData.startTarget.x, jsonData.startTarget.y);
+    this.targetEndingPoint = new PIXI.Point(jsonData.endTarget.x, jsonData.endTarget.y);
+    this.levelLength = jsonData.targetTime;
     this.preparePathComputing();
 }
 

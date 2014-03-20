@@ -107,6 +107,7 @@ SceneState.prototype.mouseClicked = function(mouseData) {
     // Identify left or right click
     event = mouseData.originalEvent;
     if(event.which === 3 || event.button === 2) {
+        this.bodyguard.shoot();
         this.addBulletTowards(this.bodyguard.absolute_position, mouseCoords);
     } else {
         this.bodyguard.moveTo(mouseCoords);
@@ -161,6 +162,8 @@ SceneState.prototype.addTarget = function() {
                         .2,.2,1,1];
     var target = new Mover(textures, 16, 10
                         , new PIXI.Point(this.level.targetStartingPoint.x, this.level.targetStartingPoint.y), colorMatrix);
+    var behaviour = new TargetBehaviour(target, this.level);
+    target.attachBehaviour(behaviour);
     return target;
 }
 

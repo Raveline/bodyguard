@@ -1,10 +1,12 @@
 DODGING = 10;
+ARRIVED = 11;
 
-function TargetBehaviour(obj, level, totalTime, finalDestination) {
+function TargetBehaviour(obj, level) {
     Behaviour.call(this, obj, level);
-    this.current_status = INACTIVE;
-    this.wait_time = 0;
-    this.finalDestination = finalDestination;
+    this.totalTime = level.levelLength;
+    this.finalDestination = level.targetEndingPoint;
+    this.moveToDestination();
+    this.waitingTime = 0;
 }
 TargetBehaviour.constructor = TargetBehaviour;
 TargetBehaviour.prototype = Object.create(Behaviour.prototype);
@@ -12,7 +14,7 @@ TargetBehaviour.prototype = Object.create(Behaviour.prototype);
 TargetBehaviour.prototype.update = function() {
     switch (this.current_status) {
         case INACTIVE:
-            this.moveToDestination();
+            this.correctMove();
             break;
 
         case MOVING:
@@ -21,31 +23,37 @@ TargetBehaviour.prototype.update = function() {
 
         case DODGING:
             this.dodge();
+
+        case ARRIVED:
+            // do nothing !
+            break;
     }
 }
 
 /**
- * We recompute move if the target has moved too much.
- * Then, if we've stopped a general direction movement, we check :
- * - If firing is possible, aim and shoot.
- * - If we've reached our path and there is nothing left to do, which
- *   normally should not happen !, we take a pause and we'll recompute
- *   a path next time.
- * - Else we just compute our new direction to our destination.
- * If we're just moving, we do nothing.
+ * The target should make pauses. Depending on the situation and the level,
+ * it could be to engage with a bystander, or to watch the scenery, etc.
+ * No idea how to spread those pauses, though. For now, it's just a random
+ * choice, with a maximum amount of pauses.
  */
 TargetBehaviour.prototype.correctMove = function() {
-    if (this.isDestinationTooFarFromTarget(this.path[0])) {
-        this.moveToTarget();
-    } else if (this.obj.direction.hasReachedDestination()) {
-        if (this.hasAShot()) {
-            this.aimingMode();
-        } else if (this.path.length == 0) {
-            this.giveTimeToThink();
-        } else {
-            // Are we done in our current direction ?
-            this.updateDirection();
-        } 
+    var stepsToDestination = this.manhattan(this.obj.computeTilePosition(), this.finalDestination);
+    var timeToTake = this.totalTime - stepsToDestination;
+    // Around 25% chances of waiting
+    if (timeToTake > 0 && Math.random()*2 > 1.5) {
+        this.current_status = INACTIVE;
+        this.waitingTime = Math.ceil(Math.random() * stepsToDestination);
+    } else if(this.path.length > 0) {
+        this.updateDirection();
+    } else {
+        this.current_status = ARRIVED;
+    }
+}
+
+TargetBehaviour.prototype.wait = function() {
+    this.waitingTime--;
+    if (this.waitingTime == 0) {
+        this.current_status = MOVING;
     }
 }
 
@@ -57,7 +65,7 @@ TargetBehaviour.prototype.updateDirection = function() {
 }
 
 TargetBehaviour.prototype.moveToDestination = function() {
-    var path = this.level.computePath(this.obj.computeTilePosition(), this.target.finalDestination);
+    var path = this.level.computePath(this.obj.computeTilePosition(), this.finalDestination);
     this.current_status = MOVING;
     this.path = path.reverse();
     this.correctMove();

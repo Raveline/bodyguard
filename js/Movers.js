@@ -1,3 +1,8 @@
+var ANIM_MOVE = { animation : true, first : 1, last : 2, loop : true }
+var ANIM_SHOOT = { animation : true, first : 3, last : 4, loop : false }
+var STOPPED = { animation : false, first : 0, loop : true }
+var DEAD = { animation : false, first : 5, loop : true }
+
 function Mover(textures, width, height, position, coloring) {
     PIXI.MovieClip.call(this, textures);
     this.width = width;
@@ -16,6 +21,7 @@ function Mover(textures, width, height, position, coloring) {
     this.setColor(coloring);
     this.behaviour = 0;
     this.alive = true;
+    this.animation = STOPPED;
 }
 Mover.constructor = Mover;
 Mover.prototype = Object.create(PIXI.MovieClip.prototype);
@@ -37,35 +43,54 @@ Mover.prototype.orientationTowards = function(lookingAt) {
 
 Mover.prototype.moveTo = function(moveTo) {
     this.direction.moveTo(moveTo);
-    this.gotoAndPlay(1);
+    this.setAnimatedFrame(ANIM_MOVE);
+}
+
+Mover.prototype.tickBehaviour = function(tick) {
+    if (this.behaviour != 0) {
+        this.behaviour.tick(tick);
+    }
 }
 
 Mover.prototype.update = function(camera, tick, lvl) {
-    if (this.behaviour != 0 && this.alive) {
-        this.behaviour.tick(tick);
+    if (this.alive) {
+        this.tickBehaviour(tick);
+        this.direction.update(lvl);
+        this.updateImage();
     }
-    if (this.currentFrame > 0 && this.alive) {
-        if (this.direction.hasReachedDestination()) {
-            this.stopMoving();
-        }
-        else {
-            this.direction.step(lvl);
-            this.updateImage();
-        }
-    }
+    // Whatever happens, we need to fix the screen position
     this.position.x = this.absolute_position.x - camera.x;
     this.position.y = this.absolute_position.y - camera.y;
 }
 
 Mover.prototype.updateImage = function() {
-    if (this.currentFrame > 2) {
-        this.gotoAndPlay(1);
+    if (this.animation.animation) {
+        if (this.currentFrame > this.animation.last) {
+            if (this.animation.loop) {
+                this.setAnimatedFrame(this.animation);
+            } else {
+                this.setFixedFrame(STOPPED);
+            }
+        }
     }
 }
 
+Mover.prototype.setFixedFrame = function(frame) {
+    this.animation = frame;
+    this.gotoAndStop(frame.first);
+}
+
+Mover.prototype.setAnimatedFrame = function(frame) {
+    this.animation = frame;
+    this.gotoAndPlay(frame.first);
+}
+
+Mover.prototype.shoot = function() {
+    this.setAnimatedFrame(ANIM_SHOOT);
+}
+
 Mover.prototype.stopMoving = function() {
-    this.direction.reached();
-    this.gotoAndStop(0);
+    this.setFixedFrame(STOPPED);
 }
 
 Mover.prototype.mustBeRendered = function(camera) {
@@ -80,8 +105,8 @@ Mover.prototype.testHit = function (projectile) {
 }
 
 Mover.prototype.hurt = function() {
-    this.gotoAndStop(5);
     this.direction.stop();
+    this.setFixedFrame(DEAD);
     this.alive = false;
 }
 
