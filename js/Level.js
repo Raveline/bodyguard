@@ -13,6 +13,7 @@ function Level(jsonData) {
     this.targetStartingPoint = computeAbsolutePosition(jsonData.startTarget.x, jsonData.startTarget.y);
     this.targetEndingPoint = new PIXI.Point(jsonData.endTarget.x, jsonData.endTarget.y);
     this.levelLength = jsonData.targetTime;
+    this.villainsSpawners = jsonData.villainsSpawners;
     this.preparePathComputing();
 }
 

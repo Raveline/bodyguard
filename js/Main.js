@@ -87,3 +87,9 @@ function getTextureArray(prefixe, quantity) {
     return textures;
 }
 
+
+/** TODO : extract this to a class, a util file, or under
+ * a carpet **/
+function removeFromArray(array, elem) {
+    array.splice(array.indexOf(elem), 1);
+}

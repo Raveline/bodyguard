@@ -1,5 +1,6 @@
-AIMING = 2;
-SHOOTING = 3;
+AIMING = 3;
+SHOOTING = 4;
+AIMING_DISTANCE = 6;
 
 function ShooterBehaviour(obj, level, target) {
     Behaviour.call(this, obj, level);
@@ -22,9 +23,11 @@ ShooterBehaviour.prototype.update = function() {
 
         case AIMING:
             this.aiming();
+            break;
 
         case SHOOTING:
-            this.shotTaken();
+            this.shooting();
+            break;
     }
 }
 
@@ -34,7 +37,7 @@ ShooterBehaviour.prototype.shotTaken = function() {
 
 ShooterBehaviour.prototype.aimingMode = function() {
     this.current_status= AIMING;
-    this.aimingCounter = 2;
+    this.aimingCounter = 1;
 }
 
 /**
@@ -90,11 +93,19 @@ ShooterBehaviour.prototype.moveToTarget = function() {
 }
 
 ShooterBehaviour.prototype.aiming = function() {
-    this.current_status = AIMING;
+    console.log(this.aimingCounter);
     if (this.aimingCounter == 0) {
-        this.shoot;
+        this.obj.shoot(this.target.absolute_position);
+        this.current_status = SHOOTING;
     } else {
         this.aimingCounter--;
     }
 }
 
+ShooterBehaviour.prototype.shooting = function() {
+    // If we're done shooting, let's loop on INACTIVITY.
+    this.obj.orientationTowards(this.target.absolute_position);
+    if (!this.obj.isShooting()) {
+        this.current_status = INACTIVE;
+    }
+}

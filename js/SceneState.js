@@ -7,14 +7,18 @@ BADDIES_NEED_MAX = 3;
 function SceneState(levelName, stage, grid, magnifier) {
     this.projectiles = [];
     this.villains = [];
+    this.livingBeings = [];
     this.generatedBaddies = 0;
+    this.generableBaddies = 10;
     this.stage = stage;
     this.grid = grid;
     this.magnifier = magnifier;
     this.ready = false;
-    
+    this.finished = false;
+    this.lost = false;
     this.loadLevel(levelName);
     this.preparePools();
+    this.events = new EventPool();
 }
 
 SceneState.prototype.preparePools = function() {   
@@ -29,7 +33,6 @@ SceneState.prototype.allSet = function() {
     this.bodyguard = this.aHeroIsBorn(); 
     this.target = this.addTarget();
     // Test code : adding a villain
-    this.generateVillain(new PIXI.Point(250,64));
     this.addToDisplayList(this.bodyguard);
     this.addToDisplayList(this.target);
     this.setMouseEvents();
@@ -55,20 +58,33 @@ SceneState.prototype.parseLevel = function(data) {
 }
 
 SceneState.prototype.update = function(elapsedTime) {
-    this.bodyguard.update(this.grid.camera, elapsedTime, this.level);
-    this.target.update(this.grid.camera, elapsedTime, this.level);
+    this.checkIfNeedBaddies();
+    this.bodyguard.update(this.grid.camera, elapsedTime, this.level, this.events);
+    this.target.update(this.grid.camera, elapsedTime, this.level, this.events);
     this.grid.set_camera(this.bodyguard, elapsedTime, this.level);
+    this.eventsReading();
     this.leadManagement();
     for (i in this.villains) {
-        this.villains[i].update(this.grid.camera, elapsedTime, this.level);
+        this.villains[i].update(this.grid.camera, elapsedTime, this.level, this.events);
+    }
+}
+
+SceneState.prototype.eventsReading = function() {
+    while (this.events.hasEvent()) {
+        var current_event = this.events.readEvent();
+        if (current_event.type == SHOOTING_EVENT) {
+            this.addBulletTowards(current_event.subject, current_event.object);
+        }
     }
 }
 
 SceneState.prototype.checkIfNeedBaddies = function() {
-    if (!this.needBaddies 
-            && this.villains.length < BADDIES_NEED_MAX
+    // TODO : add time conditions
+    if (this.villains.length < BADDIES_NEED_MAX
             && this.generatedBaddies < this.generableBaddies ) {
-        this.needBaddies = true;
+        var randomIndex = Math.floor(Math.random()*this.level.villainsSpawners.length);
+        var randomPosition = this.level.villainsSpawners[randomIndex];
+        this.generateVillain(computeAbsolutePosition(randomPosition.x, randomPosition.y));
     }
 }
 
@@ -76,7 +92,7 @@ SceneState.prototype.leadManagement = function() {
     var toRemove = [];
     for (var i = 0; i < this.projectiles.length; i++) {
         this.projectiles[i].update(this.grid.camera, this.level);
-        this.projectiles[i].checkCollision(this.villains);
+        this.projectiles[i].checkCollision(this.livingBeings);
         if (!this.projectiles[i].firing) { // This bird has flown
             toRemove.push(this.projectiles[i]);
         }
@@ -107,8 +123,7 @@ SceneState.prototype.mouseClicked = function(mouseData) {
     // Identify left or right click
     event = mouseData.originalEvent;
     if(event.which === 3 || event.button === 2) {
-        this.bodyguard.shoot();
-        this.addBulletTowards(this.bodyguard.absolute_position, mouseCoords);
+        this.bodyguard.shoot(mouseCoords);
     } else {
         this.bodyguard.moveTo(mouseCoords);
     }
@@ -125,16 +140,16 @@ SceneState.prototype.repositionMouse = function(coords) {
 /**
  * Fire a bullet from X to Y. 
  **/
-SceneState.prototype.addBulletTowards = function(from, to) {
+SceneState.prototype.addBulletTowards = function(shooter, to) {
     var projectile = this.bulletPool.borrow();
-    projectile.fire(from, to);
+    projectile.fire(shooter, to);
     this.projectiles.push(projectile);
     this.addToDisplayList(projectile);
 }
 
 SceneState.prototype.removeBullet = function(bullet) {
     this.removeFromDisplayList(bullet);
-    this.projectiles.splice(this.projectiles.indexOf(bullet), 1);
+    removeFromArray(this.projectiles, bullet);
     this.bulletPool.giveBack(bullet);
 }
 
@@ -150,6 +165,7 @@ SceneState.prototype.aHeroIsBorn = function() {
                         0,0,1,1];
     var hero = new Mover(textures, 16, 10
                         , new PIXI.Point(this.level.heroStartingPoint.x,this.level.heroStartingPoint.y), colorMatrix);
+    this.livingBeings.push(hero);
     return hero;
 };
 
@@ -164,6 +180,7 @@ SceneState.prototype.addTarget = function() {
                         , new PIXI.Point(this.level.targetStartingPoint.x, this.level.targetStartingPoint.y), colorMatrix);
     var behaviour = new TargetBehaviour(target, this.level);
     target.attachBehaviour(behaviour);
+    this.livingBeings.push(target);
     return target;
 }
 
@@ -176,6 +193,7 @@ SceneState.prototype.removeFromDisplayList = function(elem) {
 }
 
 SceneState.prototype.generateVillain = function(position) {
+    console.log("Generating villain at " + position.x + "," + position.y);
     var textures = getTextureArray("character", 6);
     // The reds are coming !
     var colorMatrix = [ 1,1,1,0,
@@ -185,6 +203,8 @@ SceneState.prototype.generateVillain = function(position) {
     var villain = new Mover(textures, 16, 10, position, colorMatrix);
     var behaviour = new ShooterBehaviour(villain, this.level, this.target);
     villain.attachBehaviour(behaviour);
+    this.generatedBaddies++;
     this.villains.push(villain);
+    this.livingBeings.push(villain);
     this.addToDisplayList(villain);
 }

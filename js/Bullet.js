@@ -6,8 +6,14 @@ function Bullet() {
 Bullet.constructor = Bullet;
 Bullet.prototype = Object.create(PIXI.Sprite.prototype);
 
-Bullet.prototype.fire = function(from, to) {
-    this.absolute_position = new PIXI.Point(from.x, from.y);
+Bullet.prototype.fire = function(shooter, to) {
+    var dist = 17; // constant hypotenuse length for a (-4, -1) vector.
+    var x = dist * Math.cos(shooter.rotation - 1.57079633);
+    var y = dist * Math.sin(shooter.rotation - 1.57079633);
+    x+= shooter.absolute_position.x;
+    y+= shooter.absolute_position.y;
+    console.log(x,y);
+    this.absolute_position = new PIXI.Point(x,y);
     this.direction = new Direction(this);
     this.direction.moveTowards(to);
     this.direction.orientateTowards(to);

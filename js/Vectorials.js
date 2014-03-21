@@ -194,7 +194,7 @@ function computeTilePosition(x,y) {
  * absolute position.
  **/
 function computeAbsolutePosition(x,y) {
-    return new PIXI.Point(x * TILE_SIZE, y * TILE_SIZE);
+    return new PIXI.Point((x * TILE_SIZE) + TILE_SIZE/2, (y * TILE_SIZE) + TILE_SIZE/2);
 }
 
 function numberToTile(n) {
