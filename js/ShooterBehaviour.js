@@ -60,6 +60,7 @@ ShooterBehaviour.prototype.correctMove = function() {
     } 
     // Nope, good path : do we have a shot ?
     else if (this.hasAShot()) {
+        this.obj.direction.stop(); // Stop moving or look absurd !
         this.aimingMode();
     }
     // No shot. Are we still moving or do we need to change our direction on the path ?
@@ -84,8 +85,10 @@ ShooterBehaviour.prototype.hasAShot = function() {
     // Has a shot if : 
     // - At [DISTANCE] (in "manhattan" style) from target.
     // - Ray tracing from this is possible 
-    // TODO : add the ray-tracing condition
-    return this.manhattan(this.obj.computeTilePosition(), this.target.computeTilePosition()) <= AIMING_DISTANCE;
+    var tileShooter = this.obj.computeTilePosition();
+    var tileTarget = this.target.computeTilePosition();
+    return this.manhattan(tileShooter, tileTarget) <= AIMING_DISTANCE 
+        && this.level.rayTrace(tileShooter, tileTarget);
 }
 
 ShooterBehaviour.prototype.moveToTarget = function() {

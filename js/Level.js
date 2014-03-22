@@ -34,3 +34,29 @@ Level.prototype.computePath = function(from, to) {
     var to = this.graph.nodes[to.y][to.x];
     return astar.search(this.graph.nodes, from, to, true);
 }
+
+Level.prototype.rayTrace = function(from, to) {
+    var dx = Math.abs(from.x - to.x);
+    var dy = Math.abs(from.y - to.y);
+    var x = dx;
+    var y = dy;
+    var n = 1 + dx + dy;
+    var x_inc = (from.x > to.x) ? 1 : -1
+    var y_inc = (from.y > to.y) ? 1 : -1;
+    var error = dx - dy;
+    dx*=2;
+    dy*=2;
+    for (; n > 0; n--) {
+        if (!this.isWalkable(from.x + x, from.y + y)) {
+            return false;
+        }
+        if (error > 0) {
+            x += x_inc;
+            error -= dy;
+        } else {
+            y += y_inc;
+            error += dx;
+        }
+    }
+    return true;
+}
