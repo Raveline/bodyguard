@@ -67,6 +67,10 @@ SceneState.prototype.update = function(elapsedTime) {
     for (i in this.villains) {
         this.villains[i].update(this.grid.camera, elapsedTime, this.level, this.events);
     }
+    if (!this.target.alive) {
+        this.lost = true;
+        this.clean();
+    }
 }
 
 SceneState.prototype.eventsReading = function() {
@@ -85,6 +89,12 @@ SceneState.prototype.checkIfNeedBaddies = function() {
         var randomIndex = Math.floor(Math.random()*this.level.villainsSpawners.length);
         var randomPosition = this.level.villainsSpawners[randomIndex];
         this.generateVillain(computeAbsolutePosition(randomPosition.x, randomPosition.y));
+    }
+}
+
+SceneState.prototype.clean = function() {
+    for (var i = this.magnifier.children.length-1; i > 0; i--) {
+        this.magnifier.removeChild(this.magnifier.children[i]);
     }
 }
 

@@ -4,12 +4,15 @@ SCALE_FACTOR = 4;
 TILE_SIZE = 16;
 SCREEN_WIDTH = GRID_WIDTH * TILE_SIZE * SCALE_FACTOR;
 SCREEN_HEIGHT = GRID_HEIGHT * TILE_SIZE * SCALE_FACTOR;
+TIME_BETWEEN_BADDIES = 1000;
 
 function Main() {
     this.initRenderer(); // PIXI rendering
     this.loadAssets();  
     this.lastTime = Date.now();
     this.timeSinceLastFrame = 0;
+    this.big_text = new PIXI.Text("", {font : "50px Arial", fill:"white"});
+    this.stage.addChild(this.big_text);
 }
 
 /**
@@ -70,12 +73,25 @@ Main.prototype.update = function() {
     var now = Date.now();
     this.timeSinceLastFrame = now - this.lastTime;
     this.lastTime = now;
-    if (this.state.ready) {
+    if (this.state.ready && !this.state.lost) {
        this.state.update(this.timeSinceLastFrame);
        this.grid.update();
+       // Checking victory or defeat condition
+       // This will have to be replaced by our "stack state"
+       if (this.state.lost) {
+           this.infoText("YOU LOST !");
+       } else if (this.state.finisehd) {
+           this.infoText("YOU WON !");
+       }
     }
     this.renderer.render(this.stage);
 };
+
+Main.prototype.infoText = function(content) {
+    this.big_text.setText(content);
+    this.big_text.x = (SCREEN_WIDTH - this.big_text.width)/2;
+    this.big_text.y = SCREEN_HEIGHT/2;
+}
 
 /** TODO : extract this to a class, a util file, or under
 a carpet. **/
