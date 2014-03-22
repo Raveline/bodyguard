@@ -3,14 +3,14 @@ var ANIM_SHOOT = { animation : true, first : 3, last : 4, loop : false, fire_eve
 var STOPPED = { animation : false, first : 0, loop : true, fire_event : false }
 var DEAD = { animation : false, first : 5, loop : true, fire_event : false }
 
-function Mover(textures, width, height, position, coloring) {
+function Mover(textures, width, height, speed, position, coloring) {
     PIXI.MovieClip.call(this, textures);
     this.width = width;
     this.height = height;
     this.anchor.x = .5;
     this.anchor.y = .5;
 
-    this.speed = 3; // CONSTANT
+    this.speed = speed;
 
     this.animationSpeed = .05;
 

@@ -12,7 +12,6 @@ Bullet.prototype.fire = function(shooter, to) {
     var y = dist * Math.sin(shooter.rotation - 1.57079633);
     x+= shooter.absolute_position.x;
     y+= shooter.absolute_position.y;
-    console.log(x,y);
     this.absolute_position = new PIXI.Point(x,y);
     this.direction = new Direction(this);
     this.direction.moveTowards(to);

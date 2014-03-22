@@ -5,7 +5,6 @@ AIMING_DISTANCE = 6;
 function ShooterBehaviour(obj, level, target) {
     Behaviour.call(this, obj, level);
     this.target = target;
-    this.current_status;
     this.current_status = INACTIVE;
 }
 ShooterBehaviour.constructor = ShooterBehaviour;
@@ -51,18 +50,22 @@ ShooterBehaviour.prototype.aimingMode = function() {
  * If we're just moving, we do nothing.
  */
 ShooterBehaviour.prototype.correctMove = function() {
-    if (this.isDestinationTooFarFromTarget(this.path[0])) {
-        this.moveToTarget();
-    } else if (this.obj.direction.hasReachedDestination()) {
-        if (this.hasAShot()) {
-            this.aimingMode();
-        } else if (this.path.length == 0) {
-            this.giveTimeToThink();
-        } else {
-            // Are we done in our current direction ?
-            this.updateDirection();
-        } 
+    // We don't have a path anymore ! Pause to think.
+    if (this.path.length == 0) {
+        this.giveTimeToThink();
     }
+    // We have a path : shall it be corrected ?
+    else if (this.isDestinationTooFarFromTarget(this.path[0])) {
+        this.moveToTarget();
+    } 
+    // Nope, good path : do we have a shot ?
+    else if (this.hasAShot()) {
+        this.aimingMode();
+    }
+    // No shot. Are we still moving or do we need to change our direction on the path ?
+    else if (this.obj.direction.hasReachedDestination()) {
+        this.updateDirection();
+    } 
 }
 
 ShooterBehaviour.prototype.updateDirection = function() {
@@ -86,14 +89,13 @@ ShooterBehaviour.prototype.hasAShot = function() {
 }
 
 ShooterBehaviour.prototype.moveToTarget = function() {
-    var path = this.level.computePath(this.obj.computeTilePosition(), this.target.computeTilePosition());
+    var path = this.getPath(this.obj.computeTilePosition(), this.target.computeTilePosition());
     this.current_status = MOVING;
     this.path = path.reverse();
     this.correctMove();
 }
 
 ShooterBehaviour.prototype.aiming = function() {
-    console.log(this.aimingCounter);
     if (this.aimingCounter == 0) {
         this.obj.shoot(this.target.absolute_position);
         this.current_status = SHOOTING;

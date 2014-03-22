@@ -1,4 +1,4 @@
-DELTA = 1000;
+DELTA = 200;
 TICK_TO_AIM = 2;
 
 INACTIVE = 0;
@@ -24,8 +24,8 @@ Behaviour.prototype.manhattan = function(from, to) {
     return Math.abs(from.x - to.x) + Math.abs(from.y - to.y);
 }
 
-Behaviour.prototype.giveTimeToThink = function(baddy) {
-    baddy.status = INACTIVE;
+Behaviour.prototype.giveTimeToThink = function() {
+    this.current_status = INACTIVE;
 }
 
 /**
@@ -33,7 +33,7 @@ Behaviour.prototype.giveTimeToThink = function(baddy) {
  * looking for same directions.*/
 Behaviour.prototype.pathToLines = function(path, start) {
     if (start >= (path.length-1)) {
-        return [start];
+        return [path[start]];
     }
     var first = path[start];
     var second = path[start+1];

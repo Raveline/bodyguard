@@ -43,9 +43,9 @@ TargetBehaviour.prototype.correctMove = function() {
     if (timeToTake > 0 && Math.random()*2 > 1.5) {
         this.current_status = INACTIVE;
         this.waitingTime = Math.ceil(Math.random() * stepsToDestination);
-    } else if(this.path.length > 0) {
+    } else if(this.obj.direction.hasReachedDestination() && this.path.length > 0) {
         this.updateDirection();
-    } else {
+    } else if(this.path.length == 0) {
         this.current_status = ARRIVED;
     }
 }

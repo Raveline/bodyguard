@@ -163,7 +163,7 @@ SceneState.prototype.aHeroIsBorn = function() {
                         0,.2,1,0,
                         .5,0,0,1,
                         0,0,1,1];
-    var hero = new Mover(textures, 16, 10
+    var hero = new Mover(textures, 16, 10, 2 
                         , new PIXI.Point(this.level.heroStartingPoint.x,this.level.heroStartingPoint.y), colorMatrix);
     this.livingBeings.push(hero);
     return hero;
@@ -176,7 +176,7 @@ SceneState.prototype.addTarget = function() {
                         .8,.8,.8,0,
                         .2,.2,.2,0,
                         .2,.2,1,1];
-    var target = new Mover(textures, 16, 10
+    var target = new Mover(textures, 16, 10, 1
                         , new PIXI.Point(this.level.targetStartingPoint.x, this.level.targetStartingPoint.y), colorMatrix);
     var behaviour = new TargetBehaviour(target, this.level);
     target.attachBehaviour(behaviour);
@@ -193,14 +193,13 @@ SceneState.prototype.removeFromDisplayList = function(elem) {
 }
 
 SceneState.prototype.generateVillain = function(position) {
-    console.log("Generating villain at " + position.x + "," + position.y);
     var textures = getTextureArray("character", 6);
     // The reds are coming !
     var colorMatrix = [ 1,1,1,0,
                         .2,.2,.2,0,
                         .2,.2,.2,0,
                         .2,.2,1,1];
-    var villain = new Mover(textures, 16, 10, position, colorMatrix);
+    var villain = new Mover(textures, 16, 10, 1.3, position, colorMatrix);
     var behaviour = new ShooterBehaviour(villain, this.level, this.target);
     villain.attachBehaviour(behaviour);
     this.generatedBaddies++;
