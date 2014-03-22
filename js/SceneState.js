@@ -1,4 +1,5 @@
 BADDIES_NEED_MAX = 3;
+TIME_BETWEEN_BADDIES = 1800;
 /**
  * Main "game" state. The hero is a bodyguard
  * protecting his targets from baddies coming
@@ -8,6 +9,7 @@ function SceneState(levelName, stage, grid, magnifier) {
     this.projectiles = [];
     this.villains = [];
     this.livingBeings = [];
+    this.bodyBags = [];
     this.generatedBaddies = 0;
     this.generableBaddies = 10;
     this.stage = stage;
@@ -19,6 +21,8 @@ function SceneState(levelName, stage, grid, magnifier) {
     this.loadLevel(levelName);
     this.preparePools();
     this.events = new EventPool();
+    this.character_textures = getTextureArray("character", 6);
+    this.villainGenerationCounter = 0;
 }
 
 SceneState.prototype.preparePools = function() {   
@@ -26,7 +30,16 @@ SceneState.prototype.preparePools = function() {
         return new Bullet();
     }
     this.bulletPool = new ObjectPool(createBullet, 10);
-    // TODO : add villain pool.
+    var createVillain = function() {
+        var textures = getTextureArray("character", 6);
+        var colorMatrix = [ 1,1,1,0,
+            .2,.2,.2,0,
+            .2,.2,.2,0,
+            .2,.2,1,1];
+        var villain = new Mover(textures, 16, 10, 1.3, new PIXI.Point(0,0), colorMatrix);
+        return villain;
+    }
+    this.villainPool = new ObjectPool(createVillain, 20); // OK, frankly, not sure it's helpful here.
 }
 
 SceneState.prototype.allSet = function() {
@@ -58,15 +71,14 @@ SceneState.prototype.parseLevel = function(data) {
 }
 
 SceneState.prototype.update = function(elapsedTime) {
+    this.villainGenerationCounter += elapsedTime;
     this.checkIfNeedBaddies();
     this.bodyguard.update(this.grid.camera, elapsedTime, this.level, this.events);
     this.target.update(this.grid.camera, elapsedTime, this.level, this.events);
     this.grid.set_camera(this.bodyguard, elapsedTime, this.level);
     this.eventsReading();
+    this.baddiesManagement(elapsedTime);
     this.leadManagement();
-    for (i in this.villains) {
-        this.villains[i].update(this.grid.camera, elapsedTime, this.level, this.events);
-    }
     if (!this.target.alive) {
         this.lost = true;
         this.clean();
@@ -89,16 +101,36 @@ SceneState.prototype.eventsReading = function() {
 SceneState.prototype.checkIfNeedBaddies = function() {
     // TODO : add time conditions
     if (this.villains.length < BADDIES_NEED_MAX
-            && this.generatedBaddies < this.generableBaddies ) {
+            && this.generatedBaddies < this.generableBaddies 
+            && this.villainGenerationCounter > TIME_BETWEEN_BADDIES) {
         var randomIndex = Math.floor(Math.random()*this.level.villainsSpawners.length);
         var randomPosition = this.level.villainsSpawners[randomIndex];
-        this.generateVillain(computeAbsolutePosition(randomPosition.x, randomPosition.y));
+        this.villainGenerationCounter = 0;
+        this.addVillain(computeAbsolutePosition(randomPosition.x, randomPosition.y));
     }
 }
 
 SceneState.prototype.clean = function() {
     for (var i = this.magnifier.children.length-1; i > 0; i--) {
         this.magnifier.removeChild(this.magnifier.children[i]);
+    }
+}
+
+SceneState.prototype.baddiesManagement = function(elapsedTime) {
+    var toRemove = [];
+    for (i in this.villains) {
+        this.villains[i].update(this.grid.camera, elapsedTime, this.level, this.events);
+        if (!this.villains[i].alive) {
+            toRemove.push(this.villains[i]);
+        }
+    }
+    for (i in this.bodyBags) {
+        this.bodyBags[i].update(this.grid.camera, elapsedTime, this.level, this.events);
+    }
+    for (i in toRemove) {
+        removeFromArray(this.villains, toRemove[i]);
+        removeFromArray(this.livingBeings, toRemove[i]);
+        this.bodyBags.push(toRemove[i]);
     }
 }
 
@@ -171,26 +203,24 @@ SceneState.prototype.removeBullet = function(bullet) {
  * Generate a Hero.
  **/
 SceneState.prototype.aHeroIsBorn = function() {
-    var textures = getTextureArray("character", 6);
     // I'm blue, dabadee dabadoo
     var colorMatrix = [ .2,.2,0,0,
                         0,.2,1,0,
                         .5,0,0,1,
                         0,0,1,1];
-    var hero = new Mover(textures, 16, 10, 2 
+    var hero = new Mover(this.character_textures, 16, 10, 2 
                         , new PIXI.Point(this.level.heroStartingPoint.x,this.level.heroStartingPoint.y), colorMatrix);
     this.livingBeings.push(hero);
     return hero;
 };
 
 SceneState.prototype.addTarget = function() {
-    var textures = getTextureArray("character", 6);
     // The reds are coming !
     var colorMatrix = [ .2,.2,.2,0,
                         .8,.8,.8,0,
                         .2,.2,.2,0,
                         .2,.2,1,1];
-    var target = new Mover(textures, 16, 10, .7
+    var target = new Mover(this.character_textures, 16, 10, .7
                         , new PIXI.Point(this.level.targetStartingPoint.x, this.level.targetStartingPoint.y), colorMatrix);
     var behaviour = new TargetBehaviour(target, this.level);
     target.attachBehaviour(behaviour);
@@ -206,18 +236,21 @@ SceneState.prototype.removeFromDisplayList = function(elem) {
     this.magnifier.removeChild(elem);
 }
 
-SceneState.prototype.generateVillain = function(position) {
-    var textures = getTextureArray("character", 6);
-    // The reds are coming !
-    var colorMatrix = [ 1,1,1,0,
-                        .2,.2,.2,0,
-                        .2,.2,.2,0,
-                        .2,.2,1,1];
-    var villain = new Mover(textures, 16, 10, 1.3, position, colorMatrix);
+SceneState.prototype.addVillain = function(position) {
+    var villain = this.villainPool.borrow();
+    // Let's add a behaviour for this dude.
     var behaviour = new ShooterBehaviour(villain, this.level, this.target);
     villain.attachBehaviour(behaviour);
+    // Let's make sure he's at the proper place.
+    villain.absolute_position = position;
     this.generatedBaddies++;
     this.villains.push(villain);
     this.livingBeings.push(villain);
     this.addToDisplayList(villain);
+}
+
+SceneState.prototype.removeVillain = function(villain) {
+    villain.alive = true;
+    removeFromArray(this.villains, villain);
+    this.villainPool.giveBack(villain);
 }
