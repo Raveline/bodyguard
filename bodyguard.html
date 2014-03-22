@@ -18,11 +18,26 @@
 	<script src="js/EventPool.js"></script>
 	<script src="js/Main.js"></script>
 </head>
+<style>
+    body { width:50%; margin:auto; }
+    canvas { margin-left:auto; margin-right:auto; display:block; }
+</style>
 <body onload="init();" oncontextmenu="return false;">
-</body>
+<h3>Bodyguard demo</h3>
+    <div>VERY basic and short demo of a fairly simple game. You're a bodyguard (the blue guy). You've been recruited to make sure your employer (green guy) survive. Some bad people (the red guys) are trying to kill him. Shoot them first andm ake sure your employer gets to the right part of the warehouse. <div>
+    <ul>
+        <li>Left click to move to somewhere on the map.</li>
+        <li>Right click to shoot. (Don't shoot your employer !)</li>
+        <li>Do not right click like a maniac, it just resets the shooting animation.</li>
+        <li>Lost ? Won ? Want to play again ? Just hit F5 for now.</li>
+        <li>Won't work on your smartphone or your tablet. Not even sure it will work on your computer, actually.</li>
+        <li>Life is not so bad : you can win even if you've been killed, as long as the green guy make it alive.</li>
+    </ul>
+
 <script>
 function init() {
     main = new Main();
 }
 </script>
+</body>
 </html>
