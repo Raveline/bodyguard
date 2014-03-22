@@ -1,6 +1,7 @@
 AIMING = 3;
 SHOOTING = 4;
 AIMING_DISTANCE = 6;
+CORRECTING_PATH_DISTANCE = 4;
 
 function ShooterBehaviour(obj, level, target) {
     Behaviour.call(this, obj, level);
@@ -78,7 +79,7 @@ ShooterBehaviour.prototype.updateDirection = function() {
 
 ShooterBehaviour.prototype.isDestinationTooFarFromTarget = function(dest) {
     var destCorrected = {x : dest.y, y : dest.x };
-    return this.manhattan(destCorrected, this.target.computeTilePosition()) > AIMING_DISTANCE;
+    return this.manhattan(destCorrected, this.target.computeTilePosition()) > CORRECTING_PATH_DISTANCE;
 }
 
 ShooterBehaviour.prototype.hasAShot = function() {
