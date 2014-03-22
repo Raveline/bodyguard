@@ -436,7 +436,7 @@
 "tileset_size" : 23,
 "startHero" : { "x" : 12, "y" : 15 },
 "startTarget" : { "x" : 15, "y" : 15 },
-"endTarget" : { "x" : 13, "y" : 2 },
+"endTarget" : { "x" : 17, "y" : 2 },
 "targetTime" : 40,
 "villainsSpawners" : [ {"x" : 1, "y" : 1 }, { "x" : 0, "y" : 10 }]
 }
