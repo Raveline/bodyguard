@@ -45,7 +45,7 @@ TargetBehaviour.prototype.correctMove = function() {
         this.waitingTime = Math.ceil(Math.random() * stepsToDestination);
     } else if(this.obj.direction.hasReachedDestination() && this.path.length > 0) {
         this.updateDirection();
-    } else if(this.path.length == 0) {
+    } else if(this.obj.direction.hasReachedDestination() && this.path.length == 0) {
         this.current_status = ARRIVED;
     }
 }
