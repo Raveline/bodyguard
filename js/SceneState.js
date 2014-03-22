@@ -190,7 +190,7 @@ SceneState.prototype.addTarget = function() {
                         .8,.8,.8,0,
                         .2,.2,.2,0,
                         .2,.2,1,1];
-    var target = new Mover(textures, 16, 10, 1
+    var target = new Mover(textures, 16, 10, .7
                         , new PIXI.Point(this.level.targetStartingPoint.x, this.level.targetStartingPoint.y), colorMatrix);
     var behaviour = new TargetBehaviour(target, this.level);
     target.attachBehaviour(behaviour);
