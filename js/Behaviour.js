@@ -27,3 +27,31 @@ Behaviour.prototype.manhattan = function(from, to) {
 Behaviour.prototype.giveTimeToThink = function(baddy) {
     baddy.status = INACTIVE;
 }
+
+/**
+ * Take a path given as [tile, tile, tile, tile] and "flatten" is,
+ * looking for same directions.*/
+Behaviour.prototype.pathToLines = function(path, start) {
+    if (start >= (path.length-1)) {
+        return [start];
+    }
+    var first = path[start];
+    var second = path[start+1];
+    var vecx = second.x - first.x;
+    var vecy = second.y - first.y;
+    var currentNode = first;
+    var i = start + 1;
+    while(i < path.length && currentNode.x + vecx == path[i].x && currentNode.y + vecy == path[i].y) {
+        currentNode = path[i];
+        i++;
+    }
+    if (i < path.length-1) {
+        return [currentNode].concat(this.pathToLines(path, i));
+    } else {
+        return [currentNode];
+    }
+}
+
+Behaviour.prototype.getPath = function(from, to) {
+    return this.pathToLines(this.level.computePath(from, to), 0);
+}

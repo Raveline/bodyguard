@@ -65,7 +65,7 @@ TargetBehaviour.prototype.updateDirection = function() {
 }
 
 TargetBehaviour.prototype.moveToDestination = function() {
-    var path = this.level.computePath(this.obj.computeTilePosition(), this.finalDestination);
+    var path = this.getPath(this.obj.computeTilePosition(), this.finalDestination);
     this.current_status = MOVING;
     this.path = path.reverse();
     this.correctMove();
