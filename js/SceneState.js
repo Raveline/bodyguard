@@ -71,6 +71,10 @@ SceneState.prototype.update = function(elapsedTime) {
         this.lost = true;
         this.clean();
     }
+    if (this.target.behaviour.current_status == ARRIVED) {
+        this.finished = true;
+        this.clean();
+    }
 }
 
 SceneState.prototype.eventsReading = function() {

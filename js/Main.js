@@ -11,7 +11,7 @@ function Main() {
     this.loadAssets();  
     this.lastTime = Date.now();
     this.timeSinceLastFrame = 0;
-    this.big_text = new PIXI.Text("", {font : "50px Arial", fill:"white"});
+    this.big_text = new PIXI.Text("", {font : "50px Arial", fill:"white", stroke:"black", strokeThickness:6});
     this.stage.addChild(this.big_text);
 }
 
@@ -80,7 +80,7 @@ Main.prototype.update = function() {
        // This will have to be replaced by our "stack state"
        if (this.state.lost) {
            this.infoText("YOU LOST !");
-       } else if (this.state.finisehd) {
+       } else if (this.state.finished) {
            this.infoText("YOU WON !");
        }
     }
@@ -89,6 +89,7 @@ Main.prototype.update = function() {
 
 Main.prototype.infoText = function(content) {
     this.big_text.setText(content);
+    this.big_text.updateText();
     this.big_text.x = (SCREEN_WIDTH - this.big_text.width)/2;
     this.big_text.y = SCREEN_HEIGHT/2;
 }
