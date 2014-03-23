@@ -1,0 +1,44 @@
+{
+    "slides" : 
+        [
+            { "character" : "bodyguard",
+              "text" : ["My job is to prevent any kind of\nlead entering my customer's body.",
+                    "It's a hard job. Not a lot of clients.\nCannot afford to pick them.",
+                    "Even when they were slimy bastards\nlike Mr. Big Ears.",
+                    "Mr. Big Ears makes a living out of\nblackmailing mafia mobs.",
+                    "Needless to say... \nHe DOES need protection.",
+                    "Oddly enough, he seems successful\nenough to afford it."]
+            },
+            { "character" : "telephone",
+                "text" : ["- Rrrrring, rrrrrrring -"]
+            },
+            { "character" : "bigears",
+               "text" : ["Hello there, it's Mr. Big Ears.",
+                    "Did you know ? The kingpin of the\nCaramia drug cartle...",
+                    "happens to have a VERY jealous\nwife. Unfortunately for him...",
+                    "I find his interpretation of\n the 7h commandment lacking.",
+                    "And I have proof. I told him,\nhe wants to meet face to face.",
+                    "Fancy a little trip with me ?\nI'm pretty sure...",
+                    "... he's going to ask his goons\nto shoot me. You're in ?"]
+            },
+            { "character" : "bodyguard",
+              "text" : ["Where and when ?"]
+            },
+            { "character" : "bigears",
+              "text" : ["On the docks, at night.\nShould be safe enough, no ?"]
+            },
+            { "character" : "telephone",
+                "text" : ["- Click -"]
+            },
+            { "character" : "bodyguard",
+              "text" : ["As I said.\nYou don't really get to pick.",
+                        "Nor to tell them\nWhat about NOT blackmailing",
+                        "homicidal...",
+                        "unfaithful...",
+                        "borderline maniac...",
+                        "mafia bosses.", 
+                        "Huh ?",
+                        "Dickhead."]
+            }
+        ]
+}
