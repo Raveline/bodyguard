@@ -94,7 +94,7 @@ SceneState.prototype.eventsReading = function() {
     while (this.events.hasEvent()) {
         var current_event = this.events.readEvent();
         if (current_event.type == SHOOTING_EVENT) {
-            this.addBulletTowards(current_event.subject, current_event.object);
+            this.addBulletTowards(current_event.subject, current_event.subject.getOrientationVector());
         }
     }
 }

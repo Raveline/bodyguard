@@ -1,4 +1,5 @@
 MARGIN = 5;
+NINETY_DEGREES = 1.57079633
 /**
  * This module :
  * - Extends PIXI.Point so it gives us vectorial utilities.
@@ -75,9 +76,7 @@ Direction.prototype.moveTo = function(dest) {
 
 // Make a moving object take a hike towards somewhere.
 Direction.prototype.moveTowards = function(dest) {
-    this.destination = dest.clone();
-    var moveVect = dest.substract(this.obj.absolute_position);
-    this.velocity = moveVect.normalize();
+    this.velocity = dest;
     this.velocity.scale(this.obj.speed);
     this.step_number = 10000; // Ugly hack so move won't stop. TODO : find a cleaner way to do this.
 }
@@ -88,7 +87,7 @@ Direction.prototype.orientateTowards = function(dest) {
     var angle = Math.atan2(vect.y, vect.x);
     // Caveat : objects are "by default" drawn facing "north",
     // but rotation starts at 1,1, so we need to correct thusly.
-    this.obj.rotation = angle + 1.57079633;
+    this.obj.rotation = angle + NINETY_DEGREES;
 }
 
 Direction.prototype.update = function(level) {

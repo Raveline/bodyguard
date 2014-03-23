@@ -1,5 +1,5 @@
-var ANIM_MOVE = { animation : true, first : 1, last : 2, loop : true, fire_event : false }
-var ANIM_SHOOT = { animation : true, first : 3, last : 4, loop : false, fire_event : true }
+var ANIM_MOVE = { animation : true, first : 1, last : 2, speedRatio : 0.025, loop : true, fire_event : false }
+var ANIM_SHOOT = { animation : true, first : 3, last : 4, speedRatio : 0.075, loop : false, fire_event : true }
 var STOPPED = { animation : false, first : 0, loop : true, fire_event : false }
 var DEAD = { animation : false, first : 5, loop : true, fire_event : false }
 
@@ -11,8 +11,6 @@ function Mover(textures, width, height, speed, position, coloring) {
     this.anchor.y = .5;
 
     this.speed = speed;
-
-    this.animationSpeed = speed * 0.025;
 
     this.position = position;
     this.absolute_position = position.clone();
@@ -86,6 +84,7 @@ Mover.prototype.setFixedFrame = function(frame) {
 
 Mover.prototype.setAnimatedFrame = function(frame) {
     this.animation = frame;
+    this.animationSpeed = this.speed * frame.speedRatio;
     this.gotoAndPlay(frame.first);
 }
 
@@ -93,8 +92,16 @@ Mover.prototype.setAnimatedFrame = function(frame) {
  * Please note : target should be absolute coordinates.
  **/
 Mover.prototype.shoot = function(target) {
-    this.current_event = {type : SHOOTING_EVENT, subject : this, object : target };
+    this.current_event = {type : SHOOTING_EVENT, subject : this };
     this.setAnimatedFrame(ANIM_SHOOT);
+}
+
+/**
+ * Give the directional vector of the mover according to its position.
+ */
+Mover.prototype.getOrientationVector = function(target) {
+    var real_angle = this.rotation - NINETY_DEGREES;
+    return new PIXI.Point(Math.cos(real_angle), Math.sin(real_angle));
 }
 
 Mover.prototype.stopMoving = function() {
