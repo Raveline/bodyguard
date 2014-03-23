@@ -18,11 +18,31 @@ function SceneState(levelName, stage, grid, magnifier) {
     this.ready = false;
     this.finished = false;
     this.lost = false;
+    this.lastWords = false;
     this.loadLevel(levelName);
     this.preparePools();
     this.events = new EventPool();
     this.character_textures = getTextureArray("character", 6);
     this.villainGenerationCounter = 0;
+    this.prepareLastWords();
+}
+
+SceneState.prototype.prepareLastWords = function() {
+    this.subtext = new PIXI.Text("", {font : "10px Arial", fill:"white", stroke:"black", strokeThickness: 4});
+    this.text = new PIXI.Text("", {font : "14px Arial", fill:"white", stroke:"black", strokeThickness: 7});
+}
+
+SceneState.prototype.showLastWords = function(sub_string, main_string) {
+    this.subtext.setText(sub_string);
+    this.text.setText(main_string);
+    this.subtext.updateText();
+    this.text.updateText();
+    this.subtext.y = SCREEN_REAL_HEIGHT/4;
+    this.subtext.x = (SCREEN_REAL_WIDTH - this.subtext.width)/2;
+    this.text.y = SCREEN_REAL_HEIGHT/2;
+    this.text.x = (SCREEN_REAL_WIDTH - this.text.width)/2;
+    this.magnifier.addChild(this.text);
+    this.magnifier.addChild(this.subtext);
 }
 
 SceneState.prototype.preparePools = function() {   
@@ -79,13 +99,19 @@ SceneState.prototype.update = function(elapsedTime) {
     this.eventsReading();
     this.baddiesManagement(elapsedTime);
     this.leadManagement();
-    if (!this.target.alive) {
+    if (!this.target.alive || !this.bodyguard.alive) {
         this.lost = true;
         this.clean();
+        if (!this.target.alive) {
+            this.showLastWords("Target died !", "YOU LOST !");
+        } else {
+            this.showLastWords("You died !", "YOU LOST !");
+        }
     }
     if (this.target.behaviour.current_status == ARRIVED) {
         this.finished = true;
         this.clean();
+        this.showLastWords("Target reached destination !", "YOU WON !");
     }
     this.grid.update();
 }
