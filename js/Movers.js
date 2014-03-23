@@ -12,7 +12,7 @@ function Mover(textures, width, height, speed, position, coloring) {
 
     this.speed = speed;
 
-    this.animationSpeed = .05;
+    this.animationSpeed = speed * 0.025;
 
     this.position = position;
     this.absolute_position = position.clone();
