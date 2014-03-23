@@ -87,6 +87,7 @@ SceneState.prototype.update = function(elapsedTime) {
         this.finished = true;
         this.clean();
     }
+    this.grid.update();
 }
 
 SceneState.prototype.eventsReading = function() {

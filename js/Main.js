@@ -1,3 +1,5 @@
+CUT_SCENE = 1;
+ACTION_SCENE = 0;
 GRID_WIDTH = 12;
 GRID_HEIGHT = 12;
 SCALE_FACTOR = 4;
@@ -5,20 +7,31 @@ TILE_SIZE = 16;
 SCREEN_WIDTH = GRID_WIDTH * TILE_SIZE * SCALE_FACTOR;
 SCREEN_HEIGHT = GRID_HEIGHT * TILE_SIZE * SCALE_FACTOR;
 
+// TODO : Eventually, put this in a config file
+var stack = [{ type : CUT_SCENE, file : "intro" },
+            { type : ACTION_SCENE, file : "docks1"}];
+
 function Main() {
-    this.initRenderer(); // PIXI rendering
+    this.initRenderer(); 
     this.loadAssets();  
-    this.lastTime = Date.now();
-    this.timeSinceLastFrame = 0;
+    // TODO : put this on the StateScene
     this.big_text = new PIXI.Text("", {font : "50px Arial", fill:"white", stroke:"black", strokeThickness:6});
     this.stage.addChild(this.big_text);
+    // Where do we stand in the general game ? TOPONDER : Maybe this should be in a savable GameState class or something.
+    this.stackIndex = 0;
+}
+
+Main.prototype.initTiming = function() {
+    // Timing utilities
+    this.lastTime = Date.now();
+    this.timeSinceLastFrame = 0;
 }
 
 /**
  * Prepare the PIXI renderer.
  */
 Main.prototype.initRenderer = function() {
-    this.stage = new PIXI.Stage(0xFFFFFF);
+    this.stage = new PIXI.Stage(0x000000);
     this.renderer = PIXI.autoDetectRenderer(SCREEN_WIDTH, SCREEN_HEIGHT);
     document.body.appendChild(this.renderer.view);
     this.prepareScaling();
@@ -43,25 +56,29 @@ Main.prototype.prepareScaling = function() {
  * loading screen.
  */
 Main.prototype.loadAssets = function() {
-    var assets = ["img/character.json", "img/bullet.png", "img/level1.json"];
+    var assets = ["img/character.json", "img/bullet.png", "img/level1.json",  "img/bodyguard.png", "img/bigears.png", "img/telephone.png"];
     loader = new PIXI.AssetLoader(assets);
-    // TODO : add before that a "StateStack".
     loader.onComplete = this.assetsLoaded.bind(this);
     loader.load();
 };
 
 /**
- * Once we have everything on the client, we
- * add a grid, make sure clicking on the stage is
- * handled, we create our hero (TODO : absurd, move that)
- * and we load a level.
- * This whole function should be refactored when we're not
- * in prototype anymore.
+ * Once we have everything on the client, we are
+ * ready to move on the stack of scenes.
  ** */
 Main.prototype.assetsLoaded = function() {
-    this.state = new SceneState("docks1", this.stage, this.grid, this.magnifier);
+    this.popTheSceneStack();
     requestAnimFrame(this.update.bind(this));
 };
+
+Main.prototype.popTheSceneStack = function() {
+    var current = stack[this.stackIndex];
+    if (current.type == CUT_SCENE) {
+        this.state = new CutSceneState(current.file, this.stage, this.magnifier);
+    } else {
+        this.state = new SceneState(current.file, this.stage, this.grid, this.magnifier);
+    }
+}
 
 /**
  * Main rendering.
@@ -74,13 +91,13 @@ Main.prototype.update = function() {
     this.lastTime = now;
     if (this.state.ready && !this.state.lost) {
        this.state.update(this.timeSinceLastFrame);
-       this.grid.update();
        // Checking victory or defeat condition
        // This will have to be replaced by our "stack state"
        if (this.state.lost) {
-           this.infoText("YOU LOST !");
+           this.popTheSceneStack;
        } else if (this.state.finished) {
-           this.infoText("YOU WON !");
+           this.stackIndex++;
+           this.popTheSceneStack();
        }
     }
     this.renderer.render(this.stage);
