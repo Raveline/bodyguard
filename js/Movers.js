@@ -132,3 +132,17 @@ Mover.prototype.computeTilePosition = function() {
 Mover.prototype.isShooting = function() {
     return this.animation == ANIM_SHOOT;
 }
+
+/** Get the next position of this moving object,
+ * used to help the IA aiming. **/
+Mover.prototype.prospectivePosition = function() {
+    if (this.direction.hasReachedDestination()) {
+        return this.absolute_position;
+    } else {
+        var velo = this.direction.velocity.clone();
+        velo.scale(6);
+        var prospective = this.absolute_position.clone();
+        prospective.add(velo);
+        return prospective;
+    }
+}

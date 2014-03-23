@@ -104,13 +104,14 @@ ShooterBehaviour.prototype.aiming = function() {
         this.obj.shoot(this.target.absolute_position);
         this.current_status = SHOOTING;
     } else {
+        this.obj.orientationTowards(this.target.prospectivePosition());
         this.aimingCounter--;
     }
 }
 
 ShooterBehaviour.prototype.shooting = function() {
     // If we're done shooting, let's loop on INACTIVITY.
-    this.obj.orientationTowards(this.target.absolute_position);
+    this.obj.orientationTowards(this.target.prospectivePosition());
     if (!this.obj.isShooting()) {
         this.current_status = INACTIVE;
     }

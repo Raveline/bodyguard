@@ -1,6 +1,6 @@
 function Bullet() {
     PIXI.Sprite.call(this, PIXI.Texture.fromImage("img/bullet.png"));
-    this.speed = 4;
+    this.speed = 6;
     this.firing = false;
 }
 Bullet.constructor = Bullet;
