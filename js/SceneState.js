@@ -263,6 +263,10 @@ SceneState.prototype.removeFromDisplayList = function(elem) {
     this.magnifier.removeChild(elem);
 }
 
+SceneState.prototype.isFinished = function() {
+    return this.finished;
+}
+
 SceneState.prototype.addVillain = function(position) {
     var villain = this.villainPool.borrow();
     // Let's add a behaviour for this dude.

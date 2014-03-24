@@ -97,7 +97,7 @@ Main.prototype.update = function() {
        // This will have to be replaced by our "stack state"
        if (this.state.lost) {
            this.popTheSceneStack;
-       } else if (this.state.finished) {
+       } else if (this.state.isFinished()) {
            this.stackIndex++;
            this.popTheSceneStack();
        }

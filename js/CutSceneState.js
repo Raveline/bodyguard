@@ -20,3 +20,7 @@ CutSceneState.prototype.loadScript = function(scriptName) {
 CutSceneState.prototype.update = function(elapsedTime) {
     this.dialog.update(elapsedTime);
 }
+
+CutSceneState.prototype.isFinished = function() {
+    return this.dialog.finished;
+}
