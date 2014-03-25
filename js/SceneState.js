@@ -15,6 +15,7 @@ function SceneState(levelName, stage, grid, magnifier) {
     this.stage = stage;
     this.grid = grid;
     this.magnifier = magnifier;
+    this.current_dialog = 0; // I hate "undefined"
     this.ready = false;
     this.finished = false;
     this.lost = false;
@@ -69,6 +70,7 @@ SceneState.prototype.allSet = function() {
     this.addToDisplayList(this.bodyguard);
     this.addToDisplayList(this.target);
     this.setMouseEvents();
+    this.current_dialog = new SceneDialog(this.level.initial, this.stage);
     this.ready = true;
 }
 
@@ -91,6 +93,12 @@ SceneState.prototype.parseLevel = function(data) {
 }
 
 SceneState.prototype.update = function(elapsedTime) {
+    if (this.current_dialog == 0) {
+        this.updateAction(elapsedTime);
+    }
+}
+
+SceneState.prototype.updateAction = function(elapsedTime) {
     this.villainGenerationCounter += elapsedTime;
     this.checkIfNeedBaddies();
     this.bodyguard.update(this.grid.camera, elapsedTime, this.level, this.events);
@@ -190,15 +198,22 @@ SceneState.prototype.mouseMoved = function(mouseData) {
 /** Compute the absolute position of the mouse, taking
  care of scrolling & scaling issue. **/
 SceneState.prototype.mouseClicked = function(mouseData) {
-    // Relocate the mouse
-    var mouseCoords = this.repositionMouse(mouseData.global);
-
-    // Identify left or right click
-    event = mouseData.originalEvent;
-    if(event.which === 3 || event.button === 2) {
-        this.bodyguard.shoot(mouseCoords);
+    if (this.current_dialog != 0) {
+        this.current_dialog.mouseClicked(mouseData);
     } else {
-        this.bodyguard.moveTo(mouseCoords);
+        // Relocate the mouse
+        var mouseCoords = this.repositionMouse(mouseData.global);
+    
+        // Identify left or right click
+        event = mouseData.originalEvent;
+        if(event.which === 3 || event.button === 2) {
+            this.bodyguard.shoot(mouseCoords);
+        } else {
+            this.bodyguard.moveTo(mouseCoords);
+        }
+    }
+    if (this.current_dialog.finished) {
+        this.current_dialog = 0;
     }
 }
 

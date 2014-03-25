@@ -1,4 +1,5 @@
 SHOOTING_EVENT = 0;
+DIALOG_EVENT = 1;
 
 /**
  * A basic event pool, here as a template for further improvement.

@@ -10,7 +10,7 @@ CutSceneState.prototype.loadScript = function(scriptName) {
     var loader = new PIXI.JsonLoader("data/" + scriptName + ".json");
     loader.on('loaded', function(evt) {
         var data = evt.content.json;
-        this.dialog = new CutSceneDialog(data, this.magnifier);
+        this.dialog = new CutSceneDialog(data.slides, this.magnifier);
         this.dialog.takeMouseEvents(this.stage);
         this.ready = true;
     }.bind(this));

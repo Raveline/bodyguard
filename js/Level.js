@@ -9,12 +9,27 @@ function Level(jsonData) {
     this.tiles = jsonData.tiles;
     this.height = this.tiles.length;
     this.width = this.tiles[0].length;
+    this.getStrategicPoints(jsonData);
+    this.getDialogs(jsonData);
+    this.levelLength = jsonData.targetTime;
+    this.preparePathComputing();
+}
+
+Level.prototype.getStrategicPoints = function(jsonData) {
     this.heroStartingPoint = computeAbsolutePosition(jsonData.startHero.x, jsonData.startHero.y);
     this.targetStartingPoint = computeAbsolutePosition(jsonData.startTarget.x, jsonData.startTarget.y);
     this.targetEndingPoint = new PIXI.Point(jsonData.endTarget.x, jsonData.endTarget.y);
-    this.levelLength = jsonData.targetTime;
     this.villainsSpawners = jsonData.villainsSpawners;
-    this.preparePathComputing();
+}
+
+Level.prototype.getDialogs = function(jsonData) {
+    this.initial = jsonData.initial_dialog;
+    this.preboss = jsonData.preboss_dialog;
+    this.final_dialog = jsonData.final_dialog;
+}
+
+Level.prototype.preparePathComputing = function() {
+    this.graph = new Graph(this.tiles);
 }
 
 Level.prototype.getTileValue = function(x,y) {
@@ -25,9 +40,6 @@ Level.prototype.isWalkable = function(x,y) {
     return this.tiles[y][x].block == 0;
 }
 
-Level.prototype.preparePathComputing = function() {
-    this.graph = new Graph(this.tiles);
-}
 
 Level.prototype.computePath = function(from, to) {
     var from = this.graph.nodes[from.y][from.x];
