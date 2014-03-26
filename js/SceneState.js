@@ -70,7 +70,7 @@ SceneState.prototype.allSet = function() {
     this.addToDisplayList(this.bodyguard);
     this.addToDisplayList(this.target);
     this.setMouseEvents();
-    this.current_dialog = new SceneDialog(this.level.initial, this.stage);
+    this.current_dialog = new ActionSceneDialog(this.level.initial, this.stage);
     this.ready = true;
 }
 

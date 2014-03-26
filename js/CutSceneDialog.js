@@ -20,7 +20,10 @@ CutSceneDialog.prototype.prepareText = function() {
     this.text = new PIXI.Text("", {font: "10px Arial", fill:"white"});
     this.container.addChild(this.text);
     this.text_index = -1;
-    this.positionText();
+}
+
+CutSceneDialog.prototype.readCharacter = function() {
+    return this.current_slide.character;
 }
 
 CutSceneDialog.prototype.positionCharacter = function() {
@@ -33,9 +36,10 @@ CutSceneDialog.prototype.positionText = function() {
 }
 
 CutSceneDialog.prototype.newFrame = function() {
-    if (this.slide_index < this.script.slides.length) {
+    this.slide_index++;
+    if (this.slide_index < this.script.length) {
         this.text_index = -1;
-        this.current_slide = this.script.slides[this.slide_index];
+        this.current_slide = this.script[this.slide_index];
         this.positionCharacter();
         this.text.setText("");
         this.changeCharacter(this.current_slide.character);
