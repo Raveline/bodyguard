@@ -9,7 +9,8 @@ ActionSceneDialog.prototype.prepareText = function() {
     this.banner = this.getBanner();
     this.container.addChild(this.banner);
     this.container.addChild(this.text);
-    this.text_index = -1;
+    this.text_index = 0;
+    this.newText();
 }
 
 ActionSceneDialog.prototype.getBanner = function() {

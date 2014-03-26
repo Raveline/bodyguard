@@ -31,7 +31,6 @@ SceneDialog.prototype.step = function() {
     this.text_index++;
     if (this.text_index > this.current_slide.text.length-1) {
         this.newFrame();
-        this.newText();
     } else {
         this.newText();
     }
@@ -47,6 +46,7 @@ SceneDialog.prototype.newFrame = function() {
         this.text_index = 0;
         this.current_slide = this.script[this.slide_index];
         this.changeCharacter(this.readCharacter());
+        this.newText();
     } else {
         this.finished = true;
     }
