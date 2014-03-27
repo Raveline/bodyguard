@@ -25,9 +25,6 @@ SceneDialog.prototype.next = function() {
     if (!this.finished) {
         this.step();
     } 
-    if (this.finished) {
-        this.clean();
-    }
 }
 
 SceneDialog.prototype.step = function() {
@@ -52,6 +49,7 @@ SceneDialog.prototype.newFrame = function() {
         this.newText();
     } else {
         this.finished = true;
+        this.clean();
     }
 }
 
@@ -67,6 +65,7 @@ SceneDialog.prototype.mouseClicked= function(mouseData) {
     event = mouseData.originalEvent;
     if (event.which === 3 || event.button === 2) {
         this.finished = true;
+        this.clean();
     } else {
         this.next();
     }
