@@ -51,13 +51,15 @@ Mover.prototype.tickBehaviour = function(tick) {
     }
 }
 
-Mover.prototype.update = function(camera, tick, lvl, events) {
+Mover.prototype.update = function(tick, lvl, events) {
     if (this.alive) {
         this.tickBehaviour(tick);
         this.direction.update(lvl);
         this.updateImage(events);
     }
-    // Whatever happens, we need to fix the screen position
+}
+
+Mover.prototype.display = function(camera) {
     this.position.x = this.absolute_position.x - camera.x;
     this.position.y = this.absolute_position.y - camera.y;
 }

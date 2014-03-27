@@ -66,12 +66,17 @@ SceneState.prototype.preparePools = function() {
 SceneState.prototype.allSet = function() {
     this.bodyguard = this.aHeroIsBorn(); 
     this.target = this.addTarget();
-    // Test code : adding a villain
     this.addToDisplayList(this.bodyguard);
     this.addToDisplayList(this.target);
     this.setMouseEvents();
-    this.current_dialog = new ActionSceneDialog(this.level.initial, this.stage);
+    this.enterDialog(this.level.initial);
     this.ready = true;
+}
+
+SceneState.prototype.enterDialog = function(dialog) {
+    this.unsetMouseEvents();
+    this.current_dialog = new ActionSceneDialog(dialog, this.stage);
+    this.current_dialog.takeMouseEvents(this.stage);
 }
 
 SceneState.prototype.loadLevel = function(levelName) {
@@ -92,21 +97,78 @@ SceneState.prototype.parseLevel = function(data) {
     this.addToDisplayList(this.grid.outputSprite);
 }
 
+/**
+ * Update and display the current scene. For now, we don't really treat those on different
+ * clocks, but that might be a better way of handling it.
+ * This function deals with two situation :
+ * - Normal, "in game" situation.
+ * - Dialogs, "scenario" situation.
+ * This could have been handled via yet another state automaton, but if we have no other case
+ * to handle, that would be a bit of over-engineering.
+ * However, let's make sure this function stays simple to read - hence the no-bracket style
+ * for the if. */
 SceneState.prototype.update = function(elapsedTime) {
-    if (this.current_dialog == 0) {
+    if (this.current_dialog == 0) 
         this.updateAction(elapsedTime);
+    else 
+        this.handleDialog(elapsedTime);
+    // Whatever happens, run the display
+    this.display();
+}
+
+/**
+ * Make sure we center in case of dialog.
+ */
+SceneState.prototype.handleDialog = function(elapsedTime) {
+    var center = 0;
+    switch (this.current_dialog.getCenter()) {
+        case CENTER_TARGET:
+            center = this.target;
+            break;
+
+        case CENTER_BODYGUARD:
+            center = this.bodyguard;
+            break;
+
+        case CENTER_BOSS:
+            center = this.boss;
+            break;
+    }
+    // Update the grid to follow camera
+    this.grid.set_camera(center, elapsedTime, this.level);
+    this.grid.needRendering = true; // Manual override for this, since we normally work on movement from the center.
+    this.grid.update();
+    // And finally, check if we're still in dialog mode
+    if (this.current_dialog.finished) {
+        this.setMouseEvents(); // Take back the mouse
+        this.current_dialog = 0;
+    }
+}
+
+SceneState.prototype.display = function() {
+    this.bodyguard.display(this.grid.camera);
+    this.target.display(this.grid.camera);
+    for (i in this.villains) {
+        this.villains[i].display(this.grid.camera);
+    }
+    for (i in this.bodyBags) {
+        this.bodyBags[i].display(this.grid.camera);
     }
 }
 
 SceneState.prototype.updateAction = function(elapsedTime) {
-    this.villainGenerationCounter += elapsedTime;
-    this.checkIfNeedBaddies();
-    this.bodyguard.update(this.grid.camera, elapsedTime, this.level, this.events);
-    this.target.update(this.grid.camera, elapsedTime, this.level, this.events);
+    this.checkIfNeedBaddies(elapsedTime);
+    this.bodyguard.update(elapsedTime, this.level, this.events);
+    this.target.update(elapsedTime, this.level, this.events);
     this.grid.set_camera(this.bodyguard, elapsedTime, this.level);
     this.eventsReading();
     this.baddiesManagement(elapsedTime);
     this.leadManagement();
+    this.checkEndConditions();
+    this.grid.update();
+}
+
+SceneState.prototype.checkEndConditions = function() {
     if (!this.target.alive || !this.bodyguard.alive) {
         this.lost = true;
         this.clean();
@@ -121,7 +183,6 @@ SceneState.prototype.updateAction = function(elapsedTime) {
         this.clean();
         this.showLastWords("Target reached destination !", "YOU WON !");
     }
-    this.grid.update();
 }
 
 SceneState.prototype.eventsReading = function() {
@@ -133,8 +194,8 @@ SceneState.prototype.eventsReading = function() {
     }
 }
 
-SceneState.prototype.checkIfNeedBaddies = function() {
-    // TODO : add time conditions
+SceneState.prototype.checkIfNeedBaddies = function(elapsedTime) {
+    this.villainGenerationCounter += elapsedTime;
     if (this.villains.length < BADDIES_NEED_MAX
             && this.generatedBaddies < this.generableBaddies 
             && this.villainGenerationCounter > TIME_BETWEEN_BADDIES) {
@@ -154,13 +215,13 @@ SceneState.prototype.clean = function() {
 SceneState.prototype.baddiesManagement = function(elapsedTime) {
     var toRemove = [];
     for (i in this.villains) {
-        this.villains[i].update(this.grid.camera, elapsedTime, this.level, this.events);
+        this.villains[i].update(elapsedTime, this.level, this.events);
         if (!this.villains[i].alive) {
             toRemove.push(this.villains[i]);
         }
     }
     for (i in this.bodyBags) {
-        this.bodyBags[i].update(this.grid.camera, elapsedTime, this.level, this.events);
+        this.bodyBags[i].update(elapsedTime, this.level, this.events);
     }
     for (i in toRemove) {
         removeFromArray(this.villains, toRemove[i]);
@@ -189,6 +250,12 @@ SceneState.prototype.setMouseEvents = function() {
     this.stage.click = this.mouseClicked.bind(this);
 }
 
+// When delegating to a sub-state, deregister events.
+SceneState.prototype.unsetMouseEvents = function() {
+    this.stage.mousemove = function() {};
+    this.stage.click = function() {};
+}
+
 // Orientation of the bodyguard when mouse is moving.
 SceneState.prototype.mouseMoved = function(mouseData) {
     var mouseCoords = this.repositionMouse(mouseData.global);
@@ -198,22 +265,15 @@ SceneState.prototype.mouseMoved = function(mouseData) {
 /** Compute the absolute position of the mouse, taking
  care of scrolling & scaling issue. **/
 SceneState.prototype.mouseClicked = function(mouseData) {
-    if (this.current_dialog != 0) {
-        this.current_dialog.mouseClicked(mouseData);
+    // Relocate the mouse
+    var mouseCoords = this.repositionMouse(mouseData.global);
+
+    // Identify left or right click
+    event = mouseData.originalEvent;
+    if(event.which === 3 || event.button === 2) {
+        this.bodyguard.shoot(mouseCoords);
     } else {
-        // Relocate the mouse
-        var mouseCoords = this.repositionMouse(mouseData.global);
-    
-        // Identify left or right click
-        event = mouseData.originalEvent;
-        if(event.which === 3 || event.button === 2) {
-            this.bodyguard.shoot(mouseCoords);
-        } else {
-            this.bodyguard.moveTo(mouseCoords);
-        }
-    }
-    if (this.current_dialog.finished) {
-        this.current_dialog = 0;
+        this.bodyguard.moveTo(mouseCoords);
     }
 }
 

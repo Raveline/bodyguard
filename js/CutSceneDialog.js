@@ -61,3 +61,8 @@ CutSceneDialog.prototype.update = function(elapsedTime) {
         }
     }
 }
+
+CutSceneDialog.prototype.clean = function() {
+    this.container.removeChild(this.character);
+    this.container.removeChild(this.text);
+}

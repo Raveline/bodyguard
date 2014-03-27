@@ -1,5 +1,13 @@
+CENTER_BODYGUARD = 0;
+CENTER_TARGET = 1;
+CENTER_BOSS = 2;
+
 function ActionSceneDialog(script, container) {
     SceneDialog.call(this, script, container);
+    this.centers = [];
+    this.centers["bodyguard"] = CENTER_BODYGUARD;
+    this.centers["target"] = CENTER_TARGET;
+    this.centers["boss"] = CENTER_BOSS;
 }
 ActionSceneDialog.constructor = ActionSceneDialog;
 ActionSceneDialog.prototype = Object.create(SceneDialog.prototype);
@@ -37,4 +45,14 @@ ActionSceneDialog.prototype.positionText = function() {
 
 ActionSceneDialog.prototype.readCharacter = function() {
     return this.current_slide.character.img;
+}
+
+ActionSceneDialog.prototype.getCenter = function() {
+    return this.centers[this.current_slide.character.center];
+}
+
+ActionSceneDialog.prototype.clean = function() {
+    this.container.removeChild(this.text);
+    this.container.removeChild(this.character);
+    this.container.removeChild(this.banner);
 }

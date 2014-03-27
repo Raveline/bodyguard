@@ -24,6 +24,9 @@ SceneDialog.prototype.prepareCharacter = function() {
 SceneDialog.prototype.next = function() {
     if (!this.finished) {
         this.step();
+    } 
+    if (this.finished) {
+        this.clean();
     }
 }
 
