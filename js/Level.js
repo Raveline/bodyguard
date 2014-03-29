@@ -19,7 +19,7 @@ Level.prototype.getStrategicPoints = function(jsonData) {
     this.heroStartingPoint = computeAbsolutePosition(jsonData.startHero.x, jsonData.startHero.y);
     this.targetStartingPoint = computeAbsolutePosition(jsonData.startTarget.x, jsonData.startTarget.y);
     this.targetEndingPoint = new PIXI.Point(jsonData.endTarget.x, jsonData.endTarget.y);
-    this.bossPosition = new PIXI.Point(jsonData.bossPosition.x, jsonData.bossPosition.y);
+    this.bossPosition = computeAbsolutePosition(jsonData.bossPosition.x, jsonData.bossPosition.y);
     // i.e. is the boss here since the beginning or should he appear suddenly ?
     // If the boss suddenly appears, it means he will appear when every goon has been shot.
     // If the boss does not appear suddenly, the level is not a "tower-defense, protect-the-target" but a

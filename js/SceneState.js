@@ -66,8 +66,13 @@ SceneState.prototype.preparePools = function() {
 SceneState.prototype.allSet = function() {
     this.bodyguard = this.aHeroIsBorn(); 
     this.target = this.addTarget();
+    this.boss = this.addBoss();
     this.addToDisplayList(this.bodyguard);
     this.addToDisplayList(this.target);
+    if (this.level.bossIsAlwaysHere) {
+        console.log("Added boss to display !");
+        this.addToDisplayList(this.boss);
+    }
     this.setMouseEvents();
     this.enterDialog(this.level.initial);
     this.ready = true;
@@ -146,8 +151,10 @@ SceneState.prototype.handleDialog = function(elapsedTime) {
 }
 
 SceneState.prototype.display = function() {
+    // TODO : Normally, we should be able to replace everything (but the bodybags) by a loop on LivingBeing
     this.bodyguard.display(this.grid.camera);
     this.target.display(this.grid.camera);
+    this.boss.display(this.grid.camera);
     for (i in this.villains) {
         this.villains[i].display(this.grid.camera);
     }
@@ -160,6 +167,7 @@ SceneState.prototype.updateAction = function(elapsedTime) {
     this.checkIfNeedBaddies(elapsedTime);
     this.bodyguard.update(elapsedTime, this.level, this.events);
     this.target.update(elapsedTime, this.level, this.events);
+    this.boss.update(elapsedTime, this.level, this.events);
     this.grid.set_camera(this.bodyguard, elapsedTime, this.level);
     this.eventsReading();
     this.baddiesManagement(elapsedTime);
@@ -359,4 +367,17 @@ SceneState.prototype.removeVillain = function(villain) {
     villain.alive = true;
     removeFromArray(this.villains, villain);
     this.villainPool.giveBack(villain);
+}
+
+SceneState.prototype.addBoss = function() {
+    // Deep Purple
+    var colorMatrix = [ .8,.8,.8,0,
+                        .2,.2,.2,0,
+                        .8,.8,.8,0,
+                        .2,.2,1,1];
+    var boss = new Mover(this.character_textures, 16, 10, 2.3, new PIXI.Point(this.level.bossPosition.x, this.level.bossPosition.y), colorMatrix);
+    var behaviour = new BossBehaviour(boss, this.level, this.target);
+    boss.attachBehaviour(behaviour);
+    this.livingBeings.push(boss);
+    return boss;
 }
