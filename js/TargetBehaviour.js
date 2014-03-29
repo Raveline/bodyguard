@@ -1,5 +1,6 @@
 DODGING = 10;
 ARRIVED = 11;
+BOSS_FIGHT = 12;
 
 function TargetBehaviour(obj, level) {
     Behaviour.call(this, obj, level);
@@ -23,10 +24,8 @@ TargetBehaviour.prototype.update = function() {
 
         case DODGING:
             this.dodge();
-
-        case ARRIVED:
-            // do nothing !
             break;
+        // Do nothing in any other case
     }
 }
 

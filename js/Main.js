@@ -1,9 +1,11 @@
-CUT_SCENE = 1;
 ACTION_SCENE = 0;
+CUT_SCENE = 1;
+TEXT_SCENE = 2;
+
+TILE_SIZE = 16;
 GRID_WIDTH = 12;
 GRID_HEIGHT = 12;
 SCALE_FACTOR = 4;
-TILE_SIZE = 16;
 SCREEN_REAL_WIDTH = GRID_WIDTH * TILE_SIZE;
 SCREEN_REAL_HEIGHT = GRID_HEIGHT * TILE_SIZE;
 SCREEN_WIDTH = SCREEN_REAL_WIDTH * SCALE_FACTOR;
@@ -15,7 +17,8 @@ NEXT_SCENE = 2;
 
 // TODO : Eventually, put this in a config file
 var stack = [{ type : CUT_SCENE, file : "intro" },
-            { type : ACTION_SCENE, file : "docks1"}];
+            { type : ACTION_SCENE, file : "docks1"},
+            { type : TEXT_SCENE, text : "Aaaaand...  that's it for now :), thanks for playing !" } ];
 
 function Main() {
     this.initRenderer(); 
@@ -81,8 +84,11 @@ Main.prototype.popTheSceneStack = function() {
     var current = stack[this.stackIndex];
     if (current.type == CUT_SCENE) {
         this.state = new CutSceneState(current.file, this.stage, this.magnifier);
-    } else {
+    } else if (current.type == ACTION_SCENE) {
         this.state = new SceneState(current.file, this.stage, this.grid, this.magnifier);
+    } else if (current.type == TEXT_SCENE) {
+        this.magnifier.visible = false;
+        this.state = new TextStage(this.stage, current.text);
     }
 }
 

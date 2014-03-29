@@ -15,7 +15,7 @@ function SceneState(levelName, stage, grid, magnifier) {
     this.stage = stage;
     this.grid = grid;
     this.magnifier = magnifier;
-    this.current_dialog = 0; // I hate "undefined"
+    this.current_dialog = 0; // I hate "undefined" - TODO : learn to live with what I hate and stop using this horrible idiom
     this.ready = false;
     this.lastWording = false;
     this.loadLevel(levelName);
@@ -26,15 +26,18 @@ function SceneState(levelName, stage, grid, magnifier) {
     this.destination = SCENE_NOT_FINISHED;
 }
 
-SceneState.prototype.showLastWords = function(sub_string, main_string) {
+SceneState.prototype.showLastWords = function(sub_string, main_string, withNext) {
     var windo = new GUIWindow(~~(SCREEN_REAL_WIDTH/1.2), SCREEN_REAL_HEIGHT/2, 0x000000, 0xFFFFFF);
     windo.add(new TextComponent(sub_string, { font :"10px Arial", fill:"white", stroke:"black", strokeThickness: 4}), POS_TOP, 1,1);
     windo.add(new TextComponent(main_string, {font : "14px Arial", fill:"white", stroke:"black", strokeThickness: 7}), POS_CENTER, 1,1);
-    windo.add(new ButtonComponent(PIXI.Texture.fromFrame("img/replay.png"), 
-                function (e) { 
-                    this.destination = REPLAY_SCENE 
-                }.bind(this))
-            , POS_BOTTOM, 1,1);
+    if (withNext) {
+        windo.add(new ButtonComponent(PIXI.Texture.fromFrame("img/replay.png"), function (e) { this.destination = REPLAY_SCENE }.bind(this)) , POS_BOTTOM, 2,1);
+        var next = new ButtonComponent(PIXI.Texture.fromFrame("img/replay.png"), function (e) { this.destination = NEXT_SCENE }.bind(this));
+        next.scale.x = -1;
+        windo.add(next, POS_BOTTOM, 2,2);
+    } else {
+        windo.add(new ButtonComponent(PIXI.Texture.fromFrame("img/replay.png"), function (e) { this.destination = REPLAY_SCENE }.bind(this)) , POS_BOTTOM, 1,1);
+    }
     windo.x = (SCREEN_REAL_WIDTH - windo.width) / 2;
     windo.y = (SCREEN_REAL_HEIGHT - windo.height) / 2;
     this.magnifier.addChild(windo);
@@ -69,16 +72,16 @@ SceneState.prototype.allSet = function() {
         this.addToDisplayList(this.boss);
     }
     this.setMouseEvents();
-    this.enterDialog(this.level.initial);
+    this.enterDialog(this.level.initial, this.exit_dialog.bind(this));
     this.ready = true;
 }
 
-SceneState.prototype.enterDialog = function(dialog) {
+SceneState.prototype.enterDialog = function(dialog, callback) {
     for (i in this.livingBeings) {
         this.livingBeings[i].freeze();
     }
     this.unsetMouseEvents();
-    this.current_dialog = new ActionSceneDialog(dialog, this.stage);
+    this.current_dialog = new ActionSceneDialog(dialog, this.stage, callback);
     this.current_dialog.takeMouseEvents(this.stage);
 }
 
@@ -143,12 +146,13 @@ SceneState.prototype.handleDialog = function(elapsedTime) {
     this.grid.needRendering = true; // Manual override for this, since we normally work on movement from the center.
     this.grid.update();
     // And finally, check if we're still in dialog mode
-    if (this.current_dialog.finished) {
-        this.setMouseEvents(); // Take back the mouse
-        this.current_dialog = 0;
-        for (var i in this.livingBeings[i]) {
-            this.livingBeings[i].unfreeze();
-        }
+}
+
+SceneState.prototype.exit_dialog = function() {
+    this.setMouseEvents(); // Take back the mouse
+    this.current_dialog = 0;
+    for (var i in this.livingBeings[i]) {
+        this.livingBeings[i].unfreeze();
     }
 }
 
@@ -178,15 +182,22 @@ SceneState.prototype.checkEndConditions = function() {
     if (!this.target.alive || !this.bodyguard.alive) {
         this.clean();
         if (!this.target.alive) {
-            this.showLastWords("Target died !", "YOU LOST !");
+            this.showLastWords("Target died !", "YOU LOST !", false);
         } else {
-            this.showLastWords("You died !", "YOU LOST !");
+            this.showLastWords("You died !", "YOU LOST !", false);
         }
     }
     if (this.target.behaviour.current_status == ARRIVED) {
-        this.clean();
-        this.showLastWords("Target reached destination !", "YOU WON !");
+        this.enterDialog(this.level.preboss, function() {
+                                                        this.exit_dialog();
+                                                        this.boss.behaviour.activate() }.bind(this));
+        this.target.behaviour.current_status = BOSS_FIGHT;
     }
+    if (!this.boss.alive) {
+        this.enterDialog(this.level.final_dialog, function() {
+                                                            this.exit_dialog();
+                                                            this.showLastWords("Mission accomplished !", "YOU WON !", true); }.bind(this));
+        }
 }
 
 SceneState.prototype.eventsReading = function() {
