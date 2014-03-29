@@ -17,23 +17,29 @@ function SceneState(levelName, stage, grid, magnifier) {
     this.magnifier = magnifier;
     this.current_dialog = 0; // I hate "undefined"
     this.ready = false;
-    this.finished = false;
-    this.lost = false;
-    this.lastWords = false;
+    this.lastWording = false;
     this.loadLevel(levelName);
     this.preparePools();
     this.events = new EventPool();
     this.character_textures = getTextureArray("character", 6);
     this.villainGenerationCounter = 0;
+    this.destination = SCENE_NOT_FINISHED;
 }
 
 SceneState.prototype.showLastWords = function(sub_string, main_string) {
     var windo = new GUIWindow(~~(SCREEN_REAL_WIDTH/1.2), SCREEN_REAL_HEIGHT/2, 0x000000, 0xFFFFFF);
     windo.add(new TextComponent(sub_string, { font :"10px Arial", fill:"white", stroke:"black", strokeThickness: 4}), POS_TOP, 1,1);
     windo.add(new TextComponent(main_string, {font : "14px Arial", fill:"white", stroke:"black", strokeThickness: 7}), POS_CENTER, 1,1);
+    windo.add(new ButtonComponent(PIXI.Texture.fromFrame("img/replay.png"), 
+                function (e) { 
+                    this.destination = REPLAY_SCENE 
+                }.bind(this))
+            , POS_BOTTOM, 1,1);
     windo.x = (SCREEN_REAL_WIDTH - windo.width) / 2;
     windo.y = (SCREEN_REAL_HEIGHT - windo.height) / 2;
     this.magnifier.addChild(windo);
+    this.unsetMouseEvents();
+    this.lastWording = true;
 }
 
 SceneState.prototype.preparePools = function() {   
@@ -97,17 +103,18 @@ SceneState.prototype.parseLevel = function(data) {
 /**
  * Update and display the current scene. For now, we don't really treat those on different
  * clocks, but that might be a better way of handling it.
- * This function deals with two situation :
- * - Normal, "in game" situation.
- * - Dialogs, "scenario" situation.
+ * This function deals with 3 situation :
+ * - "Last words" : do nothing but display.
+ * - Normal, "in game" situation : update the action.
+ * - Dialogs, "scenario" situation : only update camera to follow dialog.
  * This could have been handled via yet another state automaton, but if we have no other case
  * to handle, that would be a bit of over-engineering.
  * However, let's make sure this function stays simple to read - hence the no-bracket style
  * for the if. */
 SceneState.prototype.update = function(elapsedTime) {
-    if (this.current_dialog == 0) 
+    if (!this.lastWording && this.current_dialog == 0) 
         this.updateAction(elapsedTime);
-    else 
+    else if (this.current_dialog != 0)
         this.handleDialog(elapsedTime);
     // Whatever happens, run the display
     this.display();
@@ -169,7 +176,6 @@ SceneState.prototype.updateAction = function(elapsedTime) {
 
 SceneState.prototype.checkEndConditions = function() {
     if (!this.target.alive || !this.bodyguard.alive) {
-        this.lost = true;
         this.clean();
         if (!this.target.alive) {
             this.showLastWords("Target died !", "YOU LOST !");
@@ -178,7 +184,6 @@ SceneState.prototype.checkEndConditions = function() {
         }
     }
     if (this.target.behaviour.current_status == ARRIVED) {
-        this.finished = true;
         this.clean();
         this.showLastWords("Target reached destination !", "YOU WON !");
     }
@@ -338,7 +343,7 @@ SceneState.prototype.removeFromDisplayList = function(elem) {
 }
 
 SceneState.prototype.isFinished = function() {
-    return this.finished;
+    return this.destination != SCENE_NOT_FINISHED;
 }
 
 SceneState.prototype.addVillain = function(position) {

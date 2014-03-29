@@ -36,7 +36,7 @@ GUIWindow.prototype.add = function(component, ypositioning, xtotal, xindex) {
     var y = 0;
     switch (ypositioning) {
         case POS_BOTTOM:
-            y = 10 + this.height - component.height;
+            y = this.height - 10 - component.height;
             break;
 
         case POS_TOP:

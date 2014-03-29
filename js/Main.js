@@ -9,6 +9,10 @@ SCREEN_REAL_HEIGHT = GRID_HEIGHT * TILE_SIZE;
 SCREEN_WIDTH = SCREEN_REAL_WIDTH * SCALE_FACTOR;
 SCREEN_HEIGHT = SCREEN_REAL_HEIGHT * SCALE_FACTOR;
 
+SCENE_NOT_FINISHED = 0;
+REPLAY_SCENE = 1;
+NEXT_SCENE = 2;
+
 // TODO : Eventually, put this in a config file
 var stack = [{ type : CUT_SCENE, file : "intro" },
             { type : ACTION_SCENE, file : "docks1"}];
@@ -58,7 +62,7 @@ Main.prototype.prepareScaling = function() {
  * loading screen.
  */
 Main.prototype.loadAssets = function() {
-    var assets = ["img/character.json", "img/bullet.png", "img/level1.json",  "img/bodyguard.png", "img/bigears.png", "img/telephone.png"];
+    var assets = ["img/character.json", "img/bullet.png", "img/level1.json",  "img/bodyguard.png", "img/bigears.png", "img/telephone.png", "img/replay.png", "img/caramia.png"];
     loader = new PIXI.AssetLoader(assets);
     loader.onComplete = this.assetsLoaded.bind(this);
     loader.load();
@@ -91,14 +95,12 @@ Main.prototype.update = function() {
     var now = Date.now();
     this.timeSinceLastFrame = now - this.lastTime;
     this.lastTime = now;
-    if (this.state.ready && !this.state.lost) {
+    if (this.state.ready) {
        this.state.update(this.timeSinceLastFrame);
-       // Checking victory or defeat condition
-       // This will have to be replaced by our "stack state"
-       if (this.state.lost) {
-           this.popTheSceneStack;
-       } else if (this.state.isFinished()) {
-           this.stackIndex++;
+       if (this.state.isFinished()) {
+           if (this.state.destination != REPLAY_SCENE) {
+               this.stackIndex++;
+           }
            this.popTheSceneStack();
        }
     }
