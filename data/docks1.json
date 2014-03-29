@@ -439,6 +439,7 @@
 "endTarget" : { "x" : 19, "y" : 2 },
 "targetTime" : 40,
 "villainsSpawners" : [ {"x" : 1, "y" : 1 }, { "x" : 0, "y" : 10 }],
+"bossPosition" : { "x" : 19, "y" : 5, "alwaysHere" : true },
 "initial_dialog" : [ { "character" : { "img" : "bigears", "center" : "target" }, "text" : ["Well, here we are. The meeting in the warehouse, over there."] },
                     { "character" : { "img" : "bodyguard" , "center" : "bodyguard" } , "text" : ["I have got a bad feeling about this."]},
                     { "character" : { "img" : "bigears", "center" : "target" }, "text" : ["Do you really need to be that caricatural ?"]},
