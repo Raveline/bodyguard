@@ -70,7 +70,6 @@ SceneState.prototype.allSet = function() {
     this.addToDisplayList(this.bodyguard);
     this.addToDisplayList(this.target);
     if (this.level.bossIsAlwaysHere) {
-        console.log("Added boss to display !");
         this.addToDisplayList(this.boss);
     }
     this.setMouseEvents();
@@ -79,6 +78,9 @@ SceneState.prototype.allSet = function() {
 }
 
 SceneState.prototype.enterDialog = function(dialog) {
+    for (i in this.livingBeings) {
+        this.livingBeings[i].freeze();
+    }
     this.unsetMouseEvents();
     this.current_dialog = new ActionSceneDialog(dialog, this.stage);
     this.current_dialog.takeMouseEvents(this.stage);
@@ -147,16 +149,15 @@ SceneState.prototype.handleDialog = function(elapsedTime) {
     if (this.current_dialog.finished) {
         this.setMouseEvents(); // Take back the mouse
         this.current_dialog = 0;
+        for (var i in this.livingBeings[i]) {
+            this.livingBeings[i].unfreeze();
+        }
     }
 }
 
 SceneState.prototype.display = function() {
-    // TODO : Normally, we should be able to replace everything (but the bodybags) by a loop on LivingBeing
-    this.bodyguard.display(this.grid.camera);
-    this.target.display(this.grid.camera);
-    this.boss.display(this.grid.camera);
-    for (i in this.villains) {
-        this.villains[i].display(this.grid.camera);
+    for (i in this.livingBeings) {
+        this.livingBeings[i].display(this.grid.camera);
     }
     for (i in this.bodyBags) {
         this.bodyBags[i].display(this.grid.camera);

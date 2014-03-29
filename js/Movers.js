@@ -19,8 +19,8 @@ function Mover(textures, width, height, speed, position, coloring) {
     this.setColor(coloring);
     this.behaviour = 0;
     this.alive = true;
-    this.animation = STOPPED;
     this.current_event = 0;
+    this.setFixedFrame(STOPPED);
 }
 Mover.constructor = Mover;
 Mover.prototype = Object.create(PIXI.MovieClip.prototype);
@@ -133,6 +133,15 @@ Mover.prototype.computeTilePosition = function() {
 
 Mover.prototype.isShooting = function() {
     return this.animation == ANIM_SHOOT;
+}
+
+Mover.prototype.freeze = function() {
+    this.previous_animation = this.animation;
+    this.gotoAndStop(STOPPED);
+}
+
+Mover.prototype.unfreeze = function() {
+    this.animation = this.previous_animation;
 }
 
 /** Get the next position of this moving object,

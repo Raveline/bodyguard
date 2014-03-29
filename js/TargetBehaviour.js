@@ -5,8 +5,8 @@ function TargetBehaviour(obj, level) {
     Behaviour.call(this, obj, level);
     this.totalTime = level.levelLength;
     this.finalDestination = level.targetEndingPoint;
-    this.moveToDestination();
     this.waitingTime = 0;
+    this.current_status = INACTIVE;
 }
 TargetBehaviour.constructor = TargetBehaviour;
 TargetBehaviour.prototype = Object.create(Behaviour.prototype);
@@ -14,7 +14,7 @@ TargetBehaviour.prototype = Object.create(Behaviour.prototype);
 TargetBehaviour.prototype.update = function() {
     switch (this.current_status) {
         case INACTIVE:
-            this.correctMove();
+            this.moveToDestination();
             break;
 
         case MOVING:
