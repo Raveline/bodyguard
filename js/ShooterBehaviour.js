@@ -100,12 +100,16 @@ ShooterBehaviour.prototype.moveToTarget = function() {
 }
 
 ShooterBehaviour.prototype.aiming = function() {
-    if (this.aimingCounter == 0) {
-        this.obj.shoot(this.target.absolute_position);
-        this.current_status = SHOOTING;
+    if (this.hasAShot()) {
+        if (this.aimingCounter == 0) {
+            this.obj.shoot(this.target.absolute_position);
+            this.current_status = SHOOTING;
+        } else {
+            this.obj.orientationTowards(this.target.prospectivePosition());
+            this.aimingCounter--;
+        }
     } else {
-        this.obj.orientationTowards(this.target.prospectivePosition());
-        this.aimingCounter--;
+        this.moveToTarget();
     }
 }
 
