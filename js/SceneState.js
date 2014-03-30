@@ -11,7 +11,7 @@ function SceneState(levelName, stage, grid, magnifier) {
     this.livingBeings = [];
     this.bodyBags = [];
     this.generatedBaddies = 0;
-    this.generableBaddies = 10;
+    this.generableBaddies = 2;
     this.stage = stage;
     this.grid = grid;
     this.magnifier = magnifier;
@@ -194,10 +194,16 @@ SceneState.prototype.checkEndConditions = function() {
         this.target.behaviour.current_status = BOSS_FIGHT;
     }
     if (!this.boss.alive) {
-        this.enterDialog(this.level.final_dialog, function() {
+        if (this.target.behaviour.current_status != BOSS_FIGHT) {
+            this.showLastWords("Don't kill the boss too soon !", "YOU LOST !", false);
+        } 
+        else {
+            this.boss.setFixedFrame(DEAD); // TODO : Improve, the current process should handle this automatically
+            this.enterDialog(this.level.final_dialog, function() {
                                                             this.exit_dialog();
                                                             this.showLastWords("Mission accomplished !", "YOU WON !", true); }.bind(this));
         }
+    }
 }
 
 SceneState.prototype.eventsReading = function() {
@@ -382,7 +388,7 @@ SceneState.prototype.addBoss = function() {
                         .2,.2,.2,0,
                         .8,.8,.8,0,
                         .2,.2,1,1];
-    var boss = new Mover(this.character_textures, 16, 10, 2.3, new PIXI.Point(this.level.bossPosition.x, this.level.bossPosition.y), colorMatrix);
+    var boss = new Mover(this.character_textures, 16, 10, 1.6, new PIXI.Point(this.level.bossPosition.x, this.level.bossPosition.y), colorMatrix);
     var behaviour = new BossBehaviour(boss, this.level, this.target);
     boss.attachBehaviour(behaviour);
     this.livingBeings.push(boss);
