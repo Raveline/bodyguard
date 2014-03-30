@@ -81,6 +81,7 @@ Main.prototype.assetsLoaded = function() {
 };
 
 Main.prototype.popTheSceneStack = function() {
+    this.cleanItAll();
     var current = stack[this.stackIndex];
     if (current.type == CUT_SCENE) {
         this.state = new CutSceneState(current.file, this.stage, this.magnifier);
@@ -112,6 +113,15 @@ Main.prototype.update = function() {
     }
     this.renderer.render(this.stage);
 };
+
+Main.prototype.cleanItAll = function() {
+    for (var i = 0; i < this.magnifier.children.length; i++) {
+        this.magnifier.removeChild(this.magnifier.children[i]);
+    }
+    for (var i = 1; i < this.stage.children.length; i++) {
+        this.stage.removeChild(this.stage.children[i]);
+    }
+}
 
 Main.prototype.infoText = function(content) {
     this.big_text.setText(content);

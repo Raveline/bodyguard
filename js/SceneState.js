@@ -1,5 +1,5 @@
 BADDIES_NEED_MAX = 3;
-TIME_BETWEEN_BADDIES = 1800;
+TIME_BETWEEN_BADDIES = 4000;
 /**
  * Main "game" state. The hero is a bodyguard
  * protecting his targets from baddies coming
@@ -354,6 +354,10 @@ SceneState.prototype.addToDisplayList = function(elem) {
     this.magnifier.addChild(elem);
 }
 
+SceneState.prototype.addToBackgroundDisplayList = function(elem) {
+    this.magnifier.addChildAt(elem, 1);
+}
+
 SceneState.prototype.removeFromDisplayList = function(elem) {
     this.magnifier.removeChild(elem);
 }
@@ -372,7 +376,7 @@ SceneState.prototype.addVillain = function(position) {
     this.generatedBaddies++;
     this.villains.push(villain);
     this.livingBeings.push(villain);
-    this.addToDisplayList(villain);
+    this.addToBackgroundDisplayList(villain);
 }
 
 SceneState.prototype.removeVillain = function(villain) {
