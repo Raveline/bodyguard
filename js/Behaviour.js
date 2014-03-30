@@ -46,7 +46,7 @@ Behaviour.prototype.pathToLines = function(path, start) {
         i++;
     }
     if (i < path.length-1) {
-        return [currentNode].concat(this.pathToLines(path, i));
+        return [currentNode].concat(this.pathToLines(path, i-1));
     } else {
         return [currentNode];
     }

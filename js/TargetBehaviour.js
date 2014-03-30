@@ -1,6 +1,7 @@
 DODGING = 10;
 ARRIVED = 11;
 BOSS_FIGHT = 12;
+WAITING = 13;
 
 function TargetBehaviour(obj, level) {
     Behaviour.call(this, obj, level);
@@ -25,6 +26,10 @@ TargetBehaviour.prototype.update = function() {
         case DODGING:
             this.dodge();
             break;
+
+        case WAITING:
+            this.wait();
+            break;
         // Do nothing in any other case
     }
 }
@@ -40,7 +45,7 @@ TargetBehaviour.prototype.correctMove = function() {
     var timeToTake = this.totalTime - stepsToDestination;
     // Around 25% chances of waiting
     if (timeToTake > 0 && Math.random()*2 > 1.5) {
-        this.current_status = INACTIVE;
+        this.current_status = WAITING;
         this.waitingTime = Math.ceil(Math.random() * stepsToDestination);
     } else if(this.obj.direction.hasReachedDestination() && this.path.length > 0) {
         this.updateDirection();
