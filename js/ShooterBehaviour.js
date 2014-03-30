@@ -37,7 +37,8 @@ ShooterBehaviour.prototype.shotTaken = function() {
 
 ShooterBehaviour.prototype.aimingMode = function() {
     this.current_status= AIMING;
-    this.aimingCounter = 1;
+    this.obj.direction.stop(); // Stop moving or look absurd !
+    this.aimingCounter = 2;
 }
 
 /**
@@ -49,25 +50,36 @@ ShooterBehaviour.prototype.aimingMode = function() {
  *   a path next time.
  * - Else we just compute our new direction to our destination.
  * If we're just moving, we do nothing.
+ * TODO : Let's face it, this is rather poorly implemented. Refactor.
  */
 ShooterBehaviour.prototype.correctMove = function() {
-    // We don't have a path anymore ! Pause to think.
-    if (this.path.length == 0) {
-        this.giveTimeToThink();
-    }
-    // We have a path : shall it be corrected ?
-    else if (this.isDestinationTooFarFromTarget(this.path[0])) {
-        this.moveToTarget();
-    } 
-    // Nope, good path : do we have a shot ?
-    else if (this.hasAShot()) {
-        this.obj.direction.stop(); // Stop moving or look absurd !
+    if (this.hasAShot()) {
         this.aimingMode();
     }
-    // No shot. Are we still moving or do we need to change our direction on the path ?
-    else if (this.obj.direction.hasReachedDestination()) {
-        this.updateDirection();
-    } 
+    else {
+        // OK, we dont have a shot (too bad) : if we have a current path, can it be corrected ?
+        var dest = this.getFinalDestination();
+        if (dest) {
+            if (this.isDestinationTooFarFromTarget(dest)) {
+                this.moveToTarget();
+            } 
+            if (this.obj.direction.hasReachedDestination() && this.path.length > 0) {
+                this.updateDirection();
+            } 
+        }
+        else {
+            this.giveTimeToThink(); // Just take time to think.
+        }
+    }
+}
+
+ShooterBehaviour.prototype.getFinalDestination = function() {
+    if (this.path.length > 0) {
+        return { x: this.path[0].y, y : this.path[0].x };
+    } else if (this.obj.direction.destination) {
+        var dest = this.obj.direction.destination;
+        return computeTilePosition(dest.x, dest.y);
+    }
 }
 
 ShooterBehaviour.prototype.updateDirection = function() {
@@ -78,8 +90,7 @@ ShooterBehaviour.prototype.updateDirection = function() {
 }
 
 ShooterBehaviour.prototype.isDestinationTooFarFromTarget = function(dest) {
-    var destCorrected = {x : dest.y, y : dest.x };
-    return this.manhattan(destCorrected, this.target.computeTilePosition()) > CORRECTING_PATH_DISTANCE;
+    return manhattan(dest, this.target.computeTilePosition()) > CORRECTING_PATH_DISTANCE;
 }
 
 ShooterBehaviour.prototype.hasAShot = function() {
@@ -88,7 +99,7 @@ ShooterBehaviour.prototype.hasAShot = function() {
     // - Ray tracing from this is possible 
     var tileShooter = this.obj.computeTilePosition();
     var tileTarget = this.target.computeTilePosition();
-    return this.manhattan(tileShooter, tileTarget) <= AIMING_DISTANCE 
+    return manhattan(tileShooter, tileTarget) <= AIMING_DISTANCE 
         && this.level.rayTrace(tileShooter, tileTarget);
 }
 
@@ -117,6 +128,10 @@ ShooterBehaviour.prototype.shooting = function() {
     // If we're done shooting, let's loop on INACTIVITY.
     this.obj.orientationTowards(this.target.prospectivePosition());
     if (!this.obj.isShooting()) {
-        this.current_status = INACTIVE;
+        if (this.hasAShot()) {
+            this.aimingMode();
+        } else {
+            this.current_status = INACTIVE;
+        }
     }
 }

@@ -54,26 +54,30 @@ Level.prototype.computePath = function(from, to) {
 }
 
 Level.prototype.rayTrace = function(from, to) {
-    var dx = Math.abs(from.x - to.x);
-    var dy = Math.abs(from.y - to.y);
-    var x = dx;
-    var y = dy;
-    var n = 1 + dx + dy;
-    var x_inc = (from.x > to.x) ? 1 : -1
-    var y_inc = (from.y > to.y) ? 1 : -1;
+    // Ok, let's do a simple one, a Besentham line drawing...
+    // ... it will miss sometimes, but...
+    // ... so do humans !
+
+    var dx = Math.abs(to.x - from.x);
+    var dy = Math.abs(to.y - from.y);
+    var sx = from.x < to.x ? 1 : -1
+    var sy = from.y < to.y ? 1 : -1
     var error = dx - dy;
-    dx*=2;
-    dy*=2;
-    for (; n > 0; n--) {
-        if (!this.isWalkable(from.x + x, from.y + y)) {
+
+    var x = from.x;
+    var y = from.y;
+    while (x != to.x && y != to.y) {
+        if (!this.isWalkable(x,y)) {
             return false;
         }
-        if (error > 0) {
-            x += x_inc;
-            error -= dy;
-        } else {
-            y += y_inc;
+        var e2 = 2*error;
+        if (e2 > dy * (-1)) {
+            error = error - dy;
+            x += sx;
+        }
+        if (e2 < dx) {
             error += dx;
+            y += sy;
         }
     }
     return true;

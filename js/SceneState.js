@@ -11,7 +11,7 @@ function SceneState(levelName, stage, grid, magnifier) {
     this.livingBeings = [];
     this.bodyBags = [];
     this.generatedBaddies = 0;
-    this.generableBaddies = 2;
+    this.generableBaddies = 8;
     this.stage = stage;
     this.grid = grid;
     this.magnifier = magnifier;
@@ -99,7 +99,6 @@ SceneState.prototype.parseLevel = function(data) {
     this.level = new Level(data);
     var textures = getTextureArray("dock", data.tileset_size);
     this.grid.setLevel(textures, this.level);
-    // TODO : Change this so we can switch easily levels
     this.addToDisplayList(this.grid.outputSprite);
 }
 
@@ -194,11 +193,11 @@ SceneState.prototype.checkEndConditions = function() {
         this.target.behaviour.current_status = BOSS_FIGHT;
     }
     if (!this.boss.alive) {
+        this.bodyBags.push(this.boss);
         if (this.target.behaviour.current_status != BOSS_FIGHT) {
             this.showLastWords("Don't kill the boss too soon !", "YOU LOST !", false);
         } 
         else {
-            this.boss.setFixedFrame(DEAD); // TODO : Improve, the current process should handle this automatically
             this.enterDialog(this.level.final_dialog, function() {
                                                             this.exit_dialog();
                                                             this.showLastWords("Mission accomplished !", "YOU WON !", true); }.bind(this));
@@ -254,8 +253,8 @@ SceneState.prototype.baddiesManagement = function(elapsedTime) {
 SceneState.prototype.leadManagement = function() {
     var toRemove = [];
     for (var i = 0; i < this.projectiles.length; i++) {
-        this.projectiles[i].update(this.grid.camera, this.level);
         this.projectiles[i].checkCollision(this.livingBeings);
+        this.projectiles[i].update(this.grid.camera, this.level);
         if (!this.projectiles[i].firing) { // This bird has flown
             toRemove.push(this.projectiles[i]);
         }
@@ -388,7 +387,7 @@ SceneState.prototype.addBoss = function() {
                         .2,.2,.2,0,
                         .8,.8,.8,0,
                         .2,.2,1,1];
-    var boss = new Mover(this.character_textures, 16, 10, 1.6, new PIXI.Point(this.level.bossPosition.x, this.level.bossPosition.y), colorMatrix);
+    var boss = new Mover(this.character_textures, 16, 10, 1.2, new PIXI.Point(this.level.bossPosition.x, this.level.bossPosition.y), colorMatrix);
     var behaviour = new BossBehaviour(boss, this.level, this.target);
     boss.attachBehaviour(behaviour);
     this.livingBeings.push(boss);

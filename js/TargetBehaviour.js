@@ -41,7 +41,7 @@ TargetBehaviour.prototype.update = function() {
  * choice, with a maximum amount of pauses.
  */
 TargetBehaviour.prototype.correctMove = function() {
-    var stepsToDestination = this.manhattan(this.obj.computeTilePosition(), this.finalDestination);
+    var stepsToDestination = manhattan(this.obj.computeTilePosition(), this.finalDestination);
     var timeToTake = this.totalTime - stepsToDestination;
     // Around 25% chances of waiting
     if (timeToTake > 0 && Math.random()*2 > 1.5) {
@@ -56,7 +56,7 @@ TargetBehaviour.prototype.correctMove = function() {
 
 TargetBehaviour.prototype.wait = function() {
     this.waitingTime--;
-    if (this.waitingTime == 0) {
+    if (this.waitingTime <= 0) {
         this.current_status = MOVING;
     }
 }

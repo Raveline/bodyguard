@@ -1,13 +1,20 @@
+NOT_FIGHTING = 20;
+
 function BossBehaviour(obj, level, target) {
     ShooterBehaviour.call(this, obj, level, target);
+    this.current_status = NOT_FIGHTING;
 }
 BossBehaviour.constructor = BossBehaviour;
 BossBehaviour.prototype = Object.create(ShooterBehaviour.prototype);
 
 BossBehaviour.prototype.update = function() {
     switch (this.current_status) {
+        case NOT_FIGHTING:
+            // Just here as a reminder that we should do nothing. This behaviour should be triggered manually.
+            break;
+
         case INACTIVE:
-            // Do nothing. This behaviour should be triggered manually.
+            this.moveToTarget();
             break;
 
         case MOVING:
@@ -25,5 +32,5 @@ BossBehaviour.prototype.update = function() {
 }
 
 BossBehaviour.prototype.activate = function() {
-    this.moveToTarget();
+    this.current_status = INACTIVE;
 }

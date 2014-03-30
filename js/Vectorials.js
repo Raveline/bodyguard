@@ -199,3 +199,7 @@ function computeAbsolutePosition(x,y) {
 function numberToTile(n) {
     return ~~(n / TILE_SIZE);
 }
+
+function manhattan(from, to) {
+    return Math.abs(from.x - to.x) + Math.abs(from.y - to.y);
+}

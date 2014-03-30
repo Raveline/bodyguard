@@ -20,10 +20,6 @@ Behaviour.prototype.tick = function(tick) {
     }
 }
 
-Behaviour.prototype.manhattan = function(from, to) {
-    return Math.abs(from.x - to.x) + Math.abs(from.y - to.y);
-}
-
 Behaviour.prototype.giveTimeToThink = function() {
     this.current_status = INACTIVE;
 }

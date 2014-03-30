@@ -53,9 +53,9 @@ Mover.prototype.tickBehaviour = function(tick) {
 
 Mover.prototype.update = function(tick, lvl, events) {
     if (this.alive) {
+        this.updateImage(events);
         this.tickBehaviour(tick);
         this.direction.update(lvl);
-        this.updateImage(events);
     }
 }
 
