@@ -115,11 +115,15 @@ Main.prototype.update = function() {
 };
 
 Main.prototype.cleanItAll = function() {
-    for (var i = 0; i < this.magnifier.children.length; i++) {
-        this.magnifier.removeChild(this.magnifier.children[i]);
+    if (this.magnifier.children.length > 0) {
+        for (var i = 0; i <= this.magnifier.children.length; i++) {
+            this.magnifier.removeChild(this.magnifier.children[i]);
+        }
     }
-    for (var i = 1; i < this.stage.children.length; i++) {
-        this.stage.removeChild(this.stage.children[i]);
+    if (this.stage.children.length > 1) {
+        for (var i = 1; i <= this.stage.children.length; i++) {
+            this.stage.removeChild(this.stage.children[i]);
+        }
     }
 }
 
