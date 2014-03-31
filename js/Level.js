@@ -26,6 +26,7 @@ Level.prototype.getStrategicPoints = function(jsonData) {
     // "target is moving" kind of action.
     this.bossIsAlwaysHere = jsonData.bossPosition.alwaysHere;   
     this.villainsSpawners = jsonData.villainsSpawners;
+    this.ambientLight = jsonData.ambientLight;
 }
 
 Level.prototype.getDialogs = function(jsonData) {

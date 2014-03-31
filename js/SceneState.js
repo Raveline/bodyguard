@@ -100,6 +100,7 @@ SceneState.prototype.parseLevel = function(data) {
     var textures = getTextureArray("dock", data.tileset_size);
     this.grid.setLevel(textures, this.level);
     this.addToDisplayList(this.grid.outputSprite);
+    this.grid.outputSprite.tint = this.level.ambientLight;
 }
 
 /**
