@@ -1,6 +1,9 @@
-// This sucks.
-// Look at https://github.com/GoodBoyDigital/pixi.js/blob/master/examples/example%2011%20-%20RenderTexture/index.html
-// Note : width and height are computed in tile size
+/**
+ * Note : Though the grid is a DisplayObjectContainer, the grid itself SHOULD NOT
+ * be added to the stage. It is only a container in order to be rendered into an
+ * output sprite. This output sprite is what need to be added on the stage.
+ * TODO : create a method to get the output sprite.
+ **/
 function Grid(width, height) {
     PIXI.DisplayObjectContainer.call(this);
     this.x = 0;

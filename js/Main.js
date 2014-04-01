@@ -45,7 +45,6 @@ Main.prototype.initRenderer = function() {
     document.body.appendChild(this.renderer.view);
     this.prepareScaling();
     this.grid = new Grid(GRID_WIDTH, GRID_HEIGHT);
-    this.magnifier.addChild(this.grid);
 }
 
 /**
@@ -115,15 +114,11 @@ Main.prototype.update = function() {
 };
 
 Main.prototype.cleanItAll = function() {
-    if (this.magnifier.children.length > 0) {
-        for (var i = 0; i <= this.magnifier.children.length; i++) {
-            this.magnifier.removeChild(this.magnifier.children[i]);
-        }
+    for (var i = this.magnifier.children.length - 1;i > -1; i--) {
+        this.magnifier.removeChild(this.magnifier.children[i]);
     }
-    if (this.stage.children.length > 1) {
-        for (var i = 1; i <= this.stage.children.length; i++) {
-            this.stage.removeChild(this.stage.children[i]);
-        }
+    for (var i = this.stage.children.length-1; i > 0; i--) {
+        this.stage.removeChild(this.stage.children[i]);
     }
 }
 
