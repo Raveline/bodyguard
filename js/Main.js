@@ -64,7 +64,7 @@ Main.prototype.prepareScaling = function() {
  * loading screen.
  */
 Main.prototype.loadAssets = function() {
-    var assets = ["img/character.json", "img/bullet.png", "img/level1.json",  "img/bodyguard.png", "img/bigears.png", "img/telephone.png", "img/replay.png", "img/caramia.png"];
+    var assets = ["img/character.json", "img/bullet.png", "img/level1.json",  "img/bodyguard.png", "img/bigears.png", "img/telephone.png", "img/replay.png", "img/caramia.png", "img/light.png"];
     loader = new PIXI.AssetLoader(assets);
     loader.onComplete = this.assetsLoaded.bind(this);
     loader.load();

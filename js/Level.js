@@ -36,15 +36,15 @@ Level.prototype.getDialogs = function(jsonData) {
 }
 
 Level.prototype.preparePathComputing = function() {
-    this.graph = new Graph(this.tiles);
+    this.graph = new Graph(this.tiles[0]);
 }
 
-Level.prototype.getTileValue = function(x,y) {
-    return this.tiles[y][x].tile;
+Level.prototype.getTileValue = function(l,x,y) {
+    return this.tiles[l][y][x].tile;
 }
 
 Level.prototype.isWalkable = function(x,y) {
-    return this.tiles[y][x].block == 0;
+    return this.tiles[0][y][x].block == 0;
 }
 
 

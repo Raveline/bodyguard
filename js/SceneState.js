@@ -99,7 +99,7 @@ SceneState.prototype.parseLevel = function(data) {
     this.level = new Level(data);
     var textures = getTextureArray("dock", data.tileset_size);
     this.grid.setLevel(textures, this.level);
-    this.addToDisplayList(this.grid.outputSprite);
+    this.addToDisplayList(this.grid.outputSprite[0]); // TODO : add in proper order different layers
     this.grid.outputSprite.tint = this.level.ambientLight;
 }
 

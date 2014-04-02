@@ -8,10 +8,12 @@ function Grid(width, height) {
     PIXI.DisplayObjectContainer.call(this);
     this.x = 0;
     this.y = 0;
-    this.tilesNumX = width;
-    this.tilesNumY = height;
+    this.width = width; // In tiles !
+    this.height = height; // In tiles !
     this.camera = new Camera(0,0,width*TILE_SIZE, height*TILE_SIZE);
     this.needRendering = true;
+    this.outputSprite = [];
+    this.layers = [];
 }
 Grid.constructor = Grid;
 Grid.prototype = Object.create(PIXI.DisplayObjectContainer.prototype);
@@ -24,31 +26,19 @@ Grid.prototype = Object.create(PIXI.DisplayObjectContainer.prototype);
 Grid.prototype.setLevel = function(textures, level) {
     this.level = level;
     this.camera.setWorldMaximums(this.level.width * TILE_SIZE, this.level.height * TILE_SIZE);
-    this.textures = textures;
-    this.buildRenderTexture(this.tilesNumX*TILE_SIZE, this.tilesNumY*TILE_SIZE);
-    this.outputSprite = this.sprite || this.build_outputSprite(this.camera.width, this.camera.height);
+    for (var i = 0; i < this.level.tiles.length; i++) {
+        var layer = new GridLayer(this.tilesNumX, this.tilesNumY, this.level, i, textures, false);
+        this.layers.push(layer);
+        this.outputSprite.push(this.buildOutputSprite(this.camera.width, this.camera.height, layer.renderTexture));
+    }
 }
 
 Grid.prototype.set_camera = function(center) {
     this.needRendering= this.camera.move(center);
 }
 
-Grid.prototype.buildRenderTexture = function(width, height) {
-    this.grid = [];
-    this.renderTexture = new PIXI.RenderTexture(width, height);
-    for (var y = 0; y < height/TILE_SIZE + 1; y++) {
-        this.grid.push([]);
-        for (var x = 0; x < width/TILE_SIZE + 1; x++) {
-            var clip = new PIXI.MovieClip(this.textures);
-            this.addChild(clip);
-            this.grid[y].push(clip);
-        }
-    }
-    this.drawMapOnTexture();
-}
-
-Grid.prototype.build_outputSprite = function(width, height) {
-    var outputSprite = new PIXI.Sprite(this.renderTexture);
+Grid.prototype.buildOutputSprite = function(width, height, texture) {
+    var outputSprite = new PIXI.Sprite(texture);
     outputSprite.width = width;
     outputSprite.height = height;
     return outputSprite;
@@ -58,31 +48,9 @@ Grid.prototype.build_outputSprite = function(width, height) {
  * Draw the grid on the stored canvas, and print the canvas on the grid.
  **/
 Grid.prototype.update = function() {
-    if (this.needRendering) {
-        this.drawMapOnTexture();
-    }
-}
-
-Grid.prototype.drawMapOnTexture = function() {
-    var startX = ~~ (this.camera.x / TILE_SIZE);
-    var startY = ~~ (this.camera.y / TILE_SIZE);
-    var endX = startX + this.tilesNumX +1;
-    var endY = startY + this.tilesNumY + 1;
-
-    for (var y = startY; y < endY; y++) {
-        var line = [];
-        var real_line = y < this.level.height;
-        for (var x = startX; x < endX; x++) {
-            var tileValue = 0;
-            if (real_line && x < this.level.width) {
-                tileValue = this.level.getTileValue(x,y);
-            }
-            var clip = this.grid[x-startX][y-startY];
-            clip.gotoAndStop(tileValue);
-            clip.x = (x - startX) * TILE_SIZE - (this.camera.x % TILE_SIZE);
-            clip.y = (y- startY) * TILE_SIZE - (this.camera.y % TILE_SIZE); 
+    for (var i = 0; i < this.layers.length; i++) {
+        if (this.needRendering || this.layers[i].needRendering) {
+            this.layers[i].drawMapOnTexture(this.camera);
         }
     }
-    this.needRendering = false; 
-    this.renderTexture.render(this, new PIXI.Point(0,0), true);
 }
