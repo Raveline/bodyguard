@@ -27,7 +27,7 @@ Grid.prototype.setLevel = function(textures, level) {
     this.level = level;
     this.camera.setWorldMaximums(this.level.width * TILE_SIZE, this.level.height * TILE_SIZE);
     for (var i = 0; i < this.level.tiles.length; i++) {
-        var layer = new GridLayer(this.tilesNumX, this.tilesNumY, this.level, i, textures, false);
+        var layer = new GridLayer(this.width, this.height, this.level, i, textures, false);
         this.layers.push(layer);
         this.outputSprite.push(this.buildOutputSprite(this.camera.width, this.camera.height, layer.renderTexture));
     }

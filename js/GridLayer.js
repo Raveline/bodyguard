@@ -16,9 +16,9 @@ GridLayer.prototype = Object.create(PIXI.DisplayObjectContainer.prototype);
 
 GridLayer.prototype.buildRenderTexture = function() {
     this.renderTexture = new PIXI.RenderTexture(this.tilesNumX * TILE_SIZE, this.tilesNumY * TILE_SIZE);
-    for (var y = 0; y < this.tilesNumY/TILE_SIZE + 1; y++) {
+    for (var y = 0; y < this.tilesNumY + 1; y++) {
         this.grid.push([]);
-        for (var x = 0; x < this.tilesNumX/TILE_SIZE + 1; x++) {
+        for (var x = 0; x < this.tilesNumX + 1; x++) {
             var clip = new PIXI.MovieClip(this.textures);
             this.addChild(clip);
             this.grid[y].push(clip);
@@ -43,7 +43,10 @@ GridLayer.prototype.drawMapOnTexture = function(camera) {
             }
             var clip = this.grid[x-startX][y-startY];
             if (tileValue > -1) {
+                clip.visible = true;
                 clip.gotoAndStop(tileValue);
+            } else {
+                clip.visible = false;
             }
             // Position the tile
             clip.x = (x - startX) * TILE_SIZE - (camera.x % TILE_SIZE);
@@ -51,5 +54,5 @@ GridLayer.prototype.drawMapOnTexture = function(camera) {
         }
     }
     this.needRendering = false; 
-    this.renderTexturee.render(this, layer_static_position, true);
+    this.renderTexture.render(this, layer_static_position, true);
 }
