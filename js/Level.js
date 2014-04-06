@@ -7,8 +7,8 @@
 
 function Level(jsonData) {
     this.tiles = jsonData.tiles;
-    this.height = this.tiles.length;
-    this.width = this.tiles[0].length;
+    this.height = this.tiles[0].length;
+    this.width = this.tiles[0][0].length;
     this.getStrategicPoints(jsonData);
     this.getDialogs(jsonData);
     this.levelLength = jsonData.targetTime;
