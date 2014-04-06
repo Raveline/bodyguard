@@ -26,6 +26,26 @@ function SceneState(levelName, stage, grid, magnifier) {
     this.destination = SCENE_NOT_FINISHED;
 }
 
+SceneState.prototype.loadLevel = function(levelName) {
+    var loader = new PIXI.JsonLoader("data/" + levelName + ".json");
+    loader.on('loaded', function(evt) {
+        var data = evt.content.json;
+        this.parseLevel(data);
+        this.allSet();
+    }.bind(this));
+    loader.load();
+}
+
+SceneState.prototype.allSet = function() {
+    this.bodyguard = this.aHeroIsBorn(); 
+    this.target = this.addTarget();
+    this.boss = this.addBoss();
+    this.setMouseEvents();
+    this.enterDialog(this.level.initial, this.exit_dialog.bind(this));
+    this.handleDisplayList();
+    this.ready = true;
+}
+
 /**
  * Show the window at the end of the scene, using our basic GUI code.
  */
@@ -65,19 +85,6 @@ SceneState.prototype.preparePools = function() {
     this.villainPool = new ObjectPool(createVillain, 20); // OK, frankly, not sure it's helpful here.
 }
 
-SceneState.prototype.allSet = function() {
-    this.bodyguard = this.aHeroIsBorn(); 
-    this.target = this.addTarget();
-    this.boss = this.addBoss();
-    this.addToDisplayList(this.bodyguard);
-    this.addToDisplayList(this.target);
-    if (this.level.bossIsAlwaysHere) {
-        this.addToDisplayList(this.boss);
-    }
-    this.setMouseEvents();
-    this.enterDialog(this.level.initial, this.exit_dialog.bind(this));
-    this.ready = true;
-}
 
 SceneState.prototype.enterDialog = function(dialog, callback) {
     for (i in this.livingBeings) {
@@ -88,23 +95,25 @@ SceneState.prototype.enterDialog = function(dialog, callback) {
     this.current_dialog.takeMouseEvents(this.stage);
 }
 
-SceneState.prototype.loadLevel = function(levelName) {
-    var loader = new PIXI.JsonLoader("data/" + levelName + ".json");
-    loader.on('loaded', function(evt) {
-        var data = evt.content.json;
-        this.parseLevel(data);
-        this.allSet();
-    }.bind(this));
-    loader.load();
-}
-
 SceneState.prototype.parseLevel = function(data) {
     this.level = new Level(data);
     var textures = getTextureArray("dock", data.tileset_size);
     this.grid.setLevel(textures, this.level);
-    this.addToDisplayList(this.grid.outputSprite[0]); // TODO : add in proper order different layers
-    this.addToDisplayList(this.grid.outputSprite[1]); 
     this.grid.outputSprite.tint = this.level.ambientLight;
+}
+
+SceneState.prototype.handleDisplayList = function() {
+    // First the 1st layer grid
+    this.addToDisplayList(this.grid.outputSprite[0]); 
+    // Then the target
+    this.addToDisplayList(this.target);
+    // Then the player and the boss if needed
+    this.addToDisplayList(this.bodyguard);
+    if (this.level.bossIsAlwaysHere) {
+        this.addToDisplayList(this.boss);
+    }
+    // Then the 2nd layer
+    this.addToDisplayList(this.grid.outputSprite[1]); 
 }
 
 /**
