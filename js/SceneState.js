@@ -26,6 +26,9 @@ function SceneState(levelName, stage, grid, magnifier) {
     this.destination = SCENE_NOT_FINISHED;
 }
 
+/**
+ * Show the window at the end of the scene, using our basic GUI code.
+ */
 SceneState.prototype.showLastWords = function(sub_string, main_string, withNext) {
     var windo = new GUIWindow(~~(SCREEN_REAL_WIDTH/1.2), SCREEN_REAL_HEIGHT/2, 0x000000, 0xFFFFFF);
     windo.add(new TextComponent(sub_string, { font :"10px Arial", fill:"white", stroke:"black", strokeThickness: 4}), POS_TOP, 1,1);
@@ -100,6 +103,7 @@ SceneState.prototype.parseLevel = function(data) {
     var textures = getTextureArray("dock", data.tileset_size);
     this.grid.setLevel(textures, this.level);
     this.addToDisplayList(this.grid.outputSprite[0]); // TODO : add in proper order different layers
+    this.addToDisplayList(this.grid.outputSprite[1]); 
     this.grid.outputSprite.tint = this.level.ambientLight;
 }
 
